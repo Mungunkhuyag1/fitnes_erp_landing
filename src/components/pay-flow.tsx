@@ -2,6 +2,7 @@
 
 import { CheckCircle2, ExternalLink, Loader2 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -47,7 +48,16 @@ export interface PendingInvoice {
 export function PayHeader({ gymName }: { gymName: string }) {
   return (
     <div className="flex flex-col items-center gap-3 text-center">
-      <div className="flex size-14 items-center justify-center rounded-2xl bg-neutral-950 shadow-sm">
+      {/*
+        Тэмдэг нь нүүр рүү ХОЛБООС. Гишүүн Wallet карт дээрх шууд
+        холбоосоор энд ирдэг тул «буцах» түүх байхгүй — үнэ, цагийн
+        хуваарь харах гарц нь зөвхөн энэ.
+      */}
+      <Link
+        href="/"
+        aria-label="Нүүр хуудас"
+        className="flex size-14 items-center justify-center rounded-2xl bg-neutral-950 shadow-sm"
+      >
         <Image
           src="/brand/mark.png"
           alt=""
@@ -56,7 +66,7 @@ export function PayHeader({ gymName }: { gymName: string }) {
           className="size-10"
           priority
         />
-      </div>
+      </Link>
       <div>
         <p className="text-xl font-semibold tracking-tight">{gymName}</p>
         <p className="text-muted-foreground text-xs">Гишүүнчлэлийн төлбөр</p>
