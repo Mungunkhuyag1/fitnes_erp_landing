@@ -229,16 +229,6 @@ export default function Home() {
                 ))}
               </dl>
 
-              <div className="wf-links">
-                <a href={`tel:${GYM.phone}`}>{GYM.phoneText}</a>
-                <a href={GYM.instagram} target="_blank" rel="noreferrer">
-                  Instagram
-                </a>
-                <a href={GYM.facebook} target="_blank" rel="noreferrer">
-                  Facebook
-                </a>
-              </div>
-
               <a
                 href={GYM.mapsPlaceUrl}
                 target="_blank"

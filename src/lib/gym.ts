@@ -13,8 +13,7 @@ export const GYM = {
   /** Google Maps дээрх байршлаас авсан. */
   lat: 47.8703125,
   lon: 106.8483125,
-  mapsPlaceUrl:
-    'https://www.google.com/maps/place/WinFit+Fitness/@47.8703125,106.8457376,17z',
+  mapsPlaceUrl: 'https://maps.app.goo.gl/zMCU6YAdfinznJiD9',
 
   /** Дуудлагын холбоос ба хүнд харагдах хэлбэр тусдаа. */
   phone: '+97688303969',
