@@ -460,13 +460,16 @@
 }
 /* Хоёр багана. `1fr 1fr` бол 1180px-ийн саванд багана тус бүр 570px
    болж, доторх богино мөрүүд хоорондоо холбоогүй хөвөх болно. */
-/* Гурван багана + үлдсэн зайг барих хоосон багана.
-   ⚠ Сүүлийн `1fr` нь ЗААВАЛ: түүнгүйгээр доорх зураас (`1 / -1`)
-   хуудасны голд тасарч зогсоно. */
+/* Гурван багана өргөн даяар тарна.
+   ⚠ `repeat(3, 1fr)` БИШ `max-content` + `space-between`: тэнцүү
+   багана нь богино баганын текстийг зүүн ирмэгтээ наачихдаг тул
+   баруун тал хоосон харагдана. Агуулгын өргөнөөр нь тавиад хооронд
+   нь зай тарааж өгвөл хөл бүтэн өргөнөө эзэлнэ. */
 @media (min-width: 720px) {
   .wf-foot {
-    grid-template-columns: repeat(3, minmax(0, 240px)) 1fr;
-    gap: 28px 56px;
+    grid-template-columns: repeat(3, max-content);
+    justify-content: space-between;
+    gap: 28px 40px;
   }
 }
 .wf-foot h3 {
@@ -489,7 +492,7 @@
   transition: color .15s, border-color .15s;
 }
 .wf-social a:hover { color: var(--lime); border-color: var(--lime); }
-.wf-social svg { width: 20px; height: 20px; }
+.wf-social svg { width: 18px; height: 18px; }
 
 .wf-copy {
   grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 22px;
