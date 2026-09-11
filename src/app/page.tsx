@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { OpenNow } from '@/components/open-now';
 import { PhoneStart } from '@/components/phone-start';
 import { GYM, osmEmbedUrl } from '@/lib/gym';
 import { galleryPhotos, heroPhoto } from '@/lib/photos';
@@ -20,14 +21,22 @@ import { galleryPhotos, heroPhoto } from '@/lib/photos';
  * дараалал илэрхийлэх ёстой; үнэ, зураг хоёр дараалал биш.
  */
 
+/**
+ * `months` нь САРЫН үнэ бодоход л хэрэгтэй.
+ *
+ * ЯАГААД: «3 сар 600,000₮» гэдэг нь 250,000₮-тэй харьцуулахад хямд
+ * гэдгийг хүн толгойдоо бодох ёстой болно. Сарын үнийг нь бичиж
+ * өгвөл урт хугацааны багц яагаад ашигтайг ХАРУУЛНА — зарах гол
+ * логик нь энэ.
+ */
 const MEMBERSHIP = [
-  { name: '1 өдөр', price: 30_000, note: null },
-  { name: '1 сар', price: 188_000, note: 'анх удаа · дараа нь 250,000₮' },
-  { name: '1 сар', price: 250_000, note: null },
-  { name: '3 сар', price: 600_000, note: null },
-  { name: '6 сар', price: 1_000_000, note: null },
-  { name: '12 сар', price: 1_800_000, note: null },
-  { name: 'Уурхайчны эрх', price: 150_000, note: '14 хоног' },
+  { name: '1 өдөр', price: 30_000, note: null, months: 0 },
+  { name: '1 сар', price: 188_000, note: 'анх удаа · дараа нь 250,000₮', months: 0 },
+  { name: '1 сар', price: 250_000, note: null, months: 0 },
+  { name: '3 сар', price: 600_000, note: null, months: 3 },
+  { name: '6 сар', price: 1_000_000, note: null, months: 6 },
+  { name: '12 сар', price: 1_800_000, note: null, months: 12 },
+  { name: 'Уурхайчны эрх', price: 150_000, note: '14 хоног', months: 0 },
 ];
 
 const PRIVILEGE = [
@@ -41,6 +50,10 @@ const PRIVILEGE = [
 const INCLUDED = ['Premium тоног төхөөрөмж', 'Сауна', 'Шүршүүр', 'Үнэгүй зогсоол'];
 
 const money = (n: number) => `${n.toLocaleString('en-US')}₮`;
+
+/** Сарын үнэ — мянга хүртэл нь дугуйруулна («166,666₮» гэж бичихгүй). */
+const perMonth = (price: number, months: number) =>
+  `сард ${money(Math.round(price / months / 1000) * 1000)}`;
 
 export default function Home() {
   const hero = heroPhoto();
@@ -83,29 +96,44 @@ export default function Home() {
           )}
 
           <div className="wf-hero-body">
-            <h1 className="wf-title">
-              Train.
-              <br />
-              Focus.
-              <br />
-              Become.
-            </h1>
-
-            <div className="wf-hero-side">
+            <div>
+              <h1 className="wf-title">
+                Train.
+                <br />
+                Focus.
+                <br />
+                Become.
+              </h1>
               <p className="wf-lede">
                 {GYM.city} хотын фитнес клуб. Эрхээ онлайнаар сунгаад,
                 Apple эсвэл Google Wallet картаараа хаалганд царайгаа
                 уншуулж орно.
               </p>
-              <div className="wf-cta">
-                <Link href="/pay" className="wf-btn">
-                  Эрх сунгах
-                </Link>
-                <a href="#une" className="wf-btn wf-btn--ghost">
-                  Үнэ харах
-                </a>
-              </div>
             </div>
+
+            {/*
+              Гарчгийн хажууд ЯГ ОДОО хэрэгтэй гурван зүйл: нээлттэй
+              эсэх, үнэ хаанаас эхэлдэг, хаанаас эхлэх. Урьд нь энд
+              зөвхөн хоёр товч байсан тул баруун тал хоосон харагдаж,
+              гарчиг нь агаарт өлгөөтэй мэт байв.
+            */}
+            <aside className="wf-panel">
+              <OpenNow />
+
+              <div className="wf-offer">
+                <p className="wf-offer-lead">Анх удаа ирж байна уу?</p>
+                <p className="wf-offer-price">188,000₮</p>
+                <p className="wf-offer-note">
+                  эхний сар · дараа нь 250,000₮
+                </p>
+              </div>
+
+              <PhoneStart />
+
+              <a href="#une" className="wf-panel-link">
+                Бүх үнэ харах
+              </a>
+            </aside>
           </div>
         </section>
 
@@ -149,6 +177,7 @@ export default function Home() {
                     <dt>
                       {p.name}
                       {p.note && <small>{p.note}</small>}
+                      {p.months > 0 && <small>{perMonth(p.price, p.months)}</small>}
                     </dt>
                     <dd>{money(p.price)}</dd>
                   </div>
@@ -223,13 +252,18 @@ export default function Home() {
         </section>
 
         {/* ── Сунгах урилга: дугаарыг ЭНДЭЭС авна ── */}
+        {/*
+          ⚠ ЦОРЫН ГАНЦ гэрэлтсэн блок. Хуудас бүхэлдээ хар тул энэ нь
+          гүйлгэлтийн төгсгөлд анхаарал татах цэг болно. Хоёр дахь
+          ногоон блок нэмбэл энэ нь давамгайлахаа болино.
+        */}
         <section className="wf-act">
           <h2>Эрхээ сунгах уу?</h2>
           <p>
             Утасны дугаараа оруулаад багцаа сонгоно. Төлбөр хийсний дараа
             эрх тэр дороо нээгдэнэ.
           </p>
-          <PhoneStart />
+          <PhoneStart tone="dark" />
         </section>
       </main>
 

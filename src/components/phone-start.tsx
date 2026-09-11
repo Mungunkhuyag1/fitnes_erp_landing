@@ -15,14 +15,14 @@ import { useState } from 'react';
  * мэднэ. Хариуг нь `/pay` хуудас харуулна. «Олдсонгүй» гэдгийг энд
  * үзүүлэхийн тулд хайлтыг давхардуулах шаардлагагүй.
  */
-export function PhoneStart({ size = 'lg' }: { size?: 'lg' | 'sm' }) {
+export function PhoneStart({ tone = 'lime' }: { tone?: 'lime' | 'dark' }) {
   const router = useRouter();
   const [phone, setPhone] = useState('');
   const ok = phone.replace(/\D/g, '').length >= 8;
 
   return (
     <form
-      className={`wf-start${size === 'sm' ? ' wf-start--sm' : ''}`}
+      className={`wf-start${tone === 'dark' ? ' wf-start--dark' : ''}`}
       onSubmit={(e) => {
         e.preventDefault();
         if (ok) router.push(`/pay?phone=${encodeURIComponent(phone.trim())}`);

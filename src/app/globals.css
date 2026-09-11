@@ -150,7 +150,10 @@
   --line: #2a3120;
   --lime: #c9f31d;     /* самбарын ногоон */
   --bone: #f2f3ec;
-  --mute: #8c9478;
+  /* ⚠ #8c9478 байсныг тодруулав: хар суурин дээр 3.6:1 болж, бүх
+     тайлбар текст бүдгэрч хуудас дуусаагүй мэт харагдаж байв. */
+  --mute: #a3ab8d;
+  --mute-2: #7e8770;   /* зөвхөн тайлбар, гарын үсэгт */
 
   background: var(--ink);
   color: var(--bone);
@@ -207,8 +210,8 @@
   padding: clamp(48px, 9vw, 112px) 24px clamp(40px, 6vw, 72px);
   max-width: 1180px; margin: 0 auto;
 }
-@media (min-width: 900px) {
-  .wf-hero-body { grid-template-columns: 1.15fr .85fr; align-items: end; gap: 56px; }
+@media (min-width: 940px) {
+  .wf-hero-body { grid-template-columns: 1.05fr 380px; align-items: center; gap: 64px; }
 }
 
 /* ── Зурагтай хувилбар ──
@@ -239,8 +242,45 @@
   content: ''; display: block; margin-top: clamp(20px, 3vw, 34px);
   width: clamp(80px, 14vw, 180px); height: 6px; background: var(--lime);
 }
-.wf-lede { font-size: 17px; line-height: 1.6; color: var(--mute); margin: 0 0 26px; max-width: 46ch; }
+.wf-lede { font-size: 17px; line-height: 1.6; color: var(--mute); margin: clamp(24px, 4vw, 34px) 0 0; max-width: 44ch; }
 .wf-cta { display: flex; flex-wrap: wrap; gap: 12px; }
+
+/* ── Гарчгийн хажуугийн самбар ──
+   Хуудасны дээд хэсэгт БОДИТ мэдээлэл: нээлттэй эсэх, үнэ хаанаас
+   эхлэх, хаанаас эхлэх. Урьд нь энд зөвхөн хоёр товч байсан. */
+.wf-panel {
+  display: flex; flex-direction: column; gap: 22px;
+  padding: clamp(22px, 3vw, 28px);
+  background: var(--ink-2); border: 1px solid var(--line); border-radius: 2px;
+}
+
+.wf-open {
+  display: flex; align-items: center; gap: 9px;
+  margin: 0; font-size: 14px; color: var(--mute); letter-spacing: .01em;
+}
+.wf-open--yes { color: var(--bone); }
+.wf-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--mute-2); flex: 0 0 auto;
+}
+.wf-open--yes .wf-dot { background: var(--lime); }
+
+.wf-offer { border-top: 1px solid var(--line); padding-top: 20px; }
+.wf-offer-lead { margin: 0 0 8px; font-size: 14px; color: var(--mute); }
+.wf-offer-price {
+  margin: 0; font-family: var(--font-display), sans-serif;
+  font-weight: 700; font-size: clamp(2.4rem, 6vw, 3.1rem);
+  line-height: 1; letter-spacing: -.01em; color: var(--lime);
+  font-variant-numeric: tabular-nums;
+}
+.wf-offer-note { margin: 10px 0 0; font-size: 13px; color: var(--mute-2); }
+
+.wf-panel-link {
+  font-size: 14px; color: var(--mute); text-decoration: none;
+  border-bottom: 1px solid var(--line); padding-bottom: 3px;
+  align-self: flex-start;
+}
+.wf-panel-link:hover { color: var(--lime); border-color: var(--lime); }
 
 /* ── Багтсан зүйлсийн тууз ── */
 .wf-strip {
@@ -281,7 +321,7 @@
   object-fit: cover; border-radius: 2px;
 }
 .wf-shot figcaption {
-  margin-top: 10px; font-size: 13px; color: var(--mute);
+  margin-top: 10px; font-size: 13px; color: var(--mute-2);
   letter-spacing: .04em;
 }
 
@@ -344,16 +384,22 @@
 .wf-fine { color: var(--mute); font-size: 13px; margin: 20px 0 0; }
 
 /* ── Сунгах урилга ── */
+/* ⚠ Хуудасны ЦОРЫН ГАНЦ гэрэлтсэн блок.
+   Бүх хуудас хар тул энэ нь гүйлгэлтийн төгсгөлд зогсоох цэг болно.
+   Хоёр дахь ногоон блок нэмбэл нөлөө нь тарж алга болно. */
 .wf-act {
-  text-align: center; padding: clamp(48px, 8vw, 96px) 24px;
-  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  text-align: center; padding: clamp(56px, 9vw, 104px) 24px;
+  background: var(--lime); color: var(--ink);
 }
 .wf-act h2 {
   font-family: var(--font-display), sans-serif; font-weight: 700;
   text-transform: uppercase; font-size: clamp(2rem, 6vw, 3.6rem);
   margin: 0 0 14px; letter-spacing: .01em;
 }
-.wf-act p { color: var(--mute); max-width: 44ch; margin: 0 auto 30px; line-height: 1.6; }
+.wf-act p {
+  color: color-mix(in oklab, var(--ink) 74%, var(--lime));
+  max-width: 44ch; margin: 0 auto 30px; line-height: 1.6;
+}
 
 /* ── Дугаар оруулах талбар ──
    Гурван хэсэг нэг хүрээнд: улсын код, талбар, товч. Утас дээр товч нь
@@ -380,11 +426,32 @@
   background: var(--line); border-color: var(--line);
   color: var(--mute); cursor: not-allowed;
 }
+
+/* Ногоон блок дээрх хувилбар — ногоон товч ногоон дэвсгэр дээр
+   алга болох тул энд ХАР товч. */
+.wf-start--dark {
+  background: var(--ink); border-color: var(--ink);
+}
+.wf-start--dark .wf-start-cc { color: var(--mute); }
+.wf-start--dark input { color: var(--bone); }
+.wf-start--dark .wf-btn {
+  background: var(--bone); border-color: var(--bone); color: var(--ink);
+}
+.wf-start--dark .wf-btn:hover { background: transparent; color: var(--bone); }
+.wf-start--dark .wf-btn:disabled {
+  background: var(--line); border-color: var(--line); color: var(--mute-2);
+}
 .wf-start-arrow { width: 16px; height: 16px; }
+/* Нарийн зайд товч доошоо БҮТЭН өргөнөөр буна.
+   ⚠ `@media` нь ДЭЛГЭЦИЙН өргөнийг хардаг тул 380px-ийн самбар дотор
+   ажиллахгүй — тэнд товч хагас эгнээнд өлгөөтэй үлдэж байв. Самбарын
+   дотор үргэлж давхарлана. */
 @media (max-width: 520px) {
   .wf-start { display: grid; grid-template-columns: auto 1fr; }
   .wf-start .wf-btn { grid-column: 1 / -1; }
 }
+.wf-panel .wf-start { display: grid; grid-template-columns: auto 1fr; }
+.wf-panel .wf-start .wf-btn { grid-column: 1 / -1; }
 
 /* ── Хөл ── */
 .wf-foot {
@@ -406,4 +473,6 @@
 }
 
 .wf :focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+/* Ногоон дэвсгэр дээр ногоон тойм үл үзэгдэнэ. */
+.wf-act :focus-visible { outline-color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .wf * { transition: none !important; } }
