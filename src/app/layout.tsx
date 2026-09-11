@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Oswald, Rubik, Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
+import { GYM } from '@/lib/gym';
 import { siteUrl } from '@/lib/site';
 
 /**
@@ -27,10 +28,16 @@ const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 
 const TITLE = 'WIN FIT — Train. Focus. Become.';
+/**
+ * Хайлтын үр дүн ба холбоосын урьдчилан харагдацад ЭНЭ гарна.
+ *
+ * ⚠ Хаягийг заавал оруулна: «Яармаг фитнес» гэж хайж буй хүнд
+ * газар зүйн үг байхгүй бол энэ хуудас тохирохгүй. Нүүрэн дээр
+ * хаяг байх нь хангалтгүй — Google эхлээд тайлбарыг харуулна.
+ */
 const DESCRIPTION =
-  'Улаанбаатарын фитнес клуб. Premium тоног төхөөрөмж, сауна, шүүгээ, ' +
-  'үнэгүй зогсоол. Гишүүнчлэлээ онлайнаар сунгаж, Apple/Google Wallet ' +
-  'картаараа нэвтэрнэ.';
+  `${GYM.address} дахь фитнес клуб. Тохилог тухтай орчин, ` +
+  'бүрэн тоноглогдсон заал, сауна, шүршүүр, шүүгээ, үнэгүй зогсоол.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
