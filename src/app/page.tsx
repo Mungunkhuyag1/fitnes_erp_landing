@@ -224,6 +224,8 @@ export default function Home() {
             </div>
 
             <div className="wf-where-body">
+              <p className="wf-address">{GYM.address}</p>
+
               <dl className="wf-facts">
                 {GYM.hours.map((h) => (
                   <div key={h.days}>

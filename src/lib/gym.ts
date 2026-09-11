@@ -9,6 +9,8 @@ export const GYM = {
   name: 'WIN FIT',
   legalName: 'Win Fit Fitness',
   city: 'Улаанбаатар',
+  /** Хүнд харагдах хаяг. Газрын зураг олохгүй хүнд энэ л хэрэгтэй. */
+  address: 'Улаанбаатар, Яармаг, Happy Residence 880-р байр',
 
   /** Google Maps дээрх байршлаас авсан. */
   lat: 47.8703125,
