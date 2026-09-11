@@ -1,5 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { PhoneStart } from '@/components/phone-start';
+import { GYM, osmEmbedUrl } from '@/lib/gym';
+import { galleryPhotos, heroPhoto } from '@/lib/photos';
 
 /**
  * WIN FIT-ийн нүүр хуудас.
@@ -12,6 +15,9 @@ import Link from 'next/link';
  *
  * ⚠ Ногоон өнгийг ЧИМЭГЛЭЛД биш, БҮТЭЦЭД ашиглана (шугам, хүрээ,
  * тэмдэг). Гарчгийн нэг үгийг өнгөөр ялгахгүй.
+ *
+ * ⚠ Хэсгийн дээр «01 //» гэх дугаарлалт ТАВИХГҮЙ. Дугаарлалт нь
+ * дараалал илэрхийлэх ёстой; үнэ, зураг хоёр дараалал биш.
  */
 
 const MEMBERSHIP = [
@@ -37,6 +43,9 @@ const INCLUDED = ['Premium тоног төхөөрөмж', 'Сауна', 'Шүр
 const money = (n: number) => `${n.toLocaleString('en-US')}₮`;
 
 export default function Home() {
+  const hero = heroPhoto();
+  const photos = galleryPhotos();
+
   return (
     <div className="wf">
       <header className="wf-bar">
@@ -44,35 +53,58 @@ export default function Home() {
           <Image src="/brand/mark.png" alt="" width={28} height={28} priority />
           <span>WIN FIT</span>
         </Link>
+        <nav className="wf-nav">
+          {photos.length > 0 && <a href="#zaal">Заал</a>}
+          <a href="#une">Үнэ</a>
+          <a href="#haana">Байршил</a>
+        </nav>
         <Link href="/pay" className="wf-btn wf-btn--sm">
           Эрх сунгах
         </Link>
       </header>
 
       <main>
-        {/* ── Гарчиг: гурван цохилт, гурван мөр ── */}
-        <section className="wf-hero">
-          <h1 className="wf-title">
-            Train.
-            <br />
-            Focus.
-            <br />
-            Become.
-          </h1>
+        {/*
+          ── Гарчиг ──
+          Зураг ирсэн бол бүтэн дэлгэцээр, текстийг доод зүүн буланд
+          давхарлана. Зураггүй үед хоёр баганат типографийн зохиомж руу
+          уначихна — цоорхой үлдээхгүй.
+        */}
+        <section className={hero ? 'wf-hero wf-hero--photo' : 'wf-hero'}>
+          {hero && (
+            <Image
+              src={hero}
+              alt="WIN FIT-ийн заал"
+              fill
+              priority
+              sizes="100vw"
+              className="wf-hero-img"
+            />
+          )}
 
-          <div className="wf-hero-side">
-            <p className="wf-lede">
-              Улаанбаатар хотын фитнес клуб. Эрхээ онлайнаар сунгаад,
-              Apple эсвэл Google Wallet картаараа хаалганд царайгаа
-              уншуулж орно.
-            </p>
-            <div className="wf-cta">
-              <Link href="/pay" className="wf-btn">
-                Эрх сунгах
-              </Link>
-              <a href="#une" className="wf-btn wf-btn--ghost">
-                Үнэ харах
-              </a>
+          <div className="wf-hero-body">
+            <h1 className="wf-title">
+              Train.
+              <br />
+              Focus.
+              <br />
+              Become.
+            </h1>
+
+            <div className="wf-hero-side">
+              <p className="wf-lede">
+                {GYM.city} хотын фитнес клуб. Эрхээ онлайнаар сунгаад,
+                Apple эсвэл Google Wallet картаараа хаалганд царайгаа
+                уншуулж орно.
+              </p>
+              <div className="wf-cta">
+                <Link href="/pay" className="wf-btn">
+                  Эрх сунгах
+                </Link>
+                <a href="#une" className="wf-btn wf-btn--ghost">
+                  Үнэ харах
+                </a>
+              </div>
             </div>
           </div>
         </section>
@@ -84,52 +116,120 @@ export default function Home() {
           ))}
         </div>
 
-        {/* ── Үнэ: хананы самбар шиг ── */}
-        <section id="une" className="wf-board">
-          <div className="wf-col">
-            <h2>Гишүүнчлэл</h2>
-            <dl>
-              {MEMBERSHIP.map((p, i) => (
-                <div key={`${p.name}-${i}`} className="wf-row">
-                  <dt>
-                    {p.name}
-                    {p.note && <small>{p.note}</small>}
-                  </dt>
-                  <dd>{money(p.price)}</dd>
-                </div>
+        {/* ── Заал: зураг ирсэн үед л гарна ── */}
+        {photos.length > 0 && (
+          <section id="zaal" className="wf-sec">
+            <h2 className="wf-h2">Заал</h2>
+            <div className="wf-grid">
+              {photos.map((p) => (
+                <figure key={p.src} className="wf-shot">
+                  <Image
+                    src={p.src}
+                    alt={p.caption}
+                    width={1400}
+                    height={933}
+                    sizes="(min-width: 900px) 33vw, 100vw"
+                  />
+                  <figcaption>{p.caption}</figcaption>
+                </figure>
               ))}
-            </dl>
-          </div>
+            </div>
+          </section>
+        )}
 
-          <div className="wf-col wf-col--alt">
-            <h2>Хөнгөлөлт</h2>
-            <dl>
-              {PRIVILEGE.map((p) => (
-                <div key={p.name} className="wf-row">
-                  <dt>
-                    {p.name}
-                    {p.note && <small>{p.note}</small>}
-                  </dt>
-                  <dd>{money(p.price)}</dd>
-                </div>
-              ))}
-            </dl>
-            <p className="wf-fine">
-              Хөнгөлөлттэй эрхийг ресепшн дээр үнэмлэх үзүүлж нээлгэнэ.
-            </p>
+        {/* ── Үнэ: хананы самбар шиг ── */}
+        <section id="une" className="wf-sec">
+          <h2 className="wf-h2">Үнэ</h2>
+          <div className="wf-board">
+            <div className="wf-col">
+              <h3>Гишүүнчлэл</h3>
+              <dl>
+                {MEMBERSHIP.map((p, i) => (
+                  <div key={`${p.name}-${i}`} className="wf-row">
+                    <dt>
+                      {p.name}
+                      {p.note && <small>{p.note}</small>}
+                    </dt>
+                    <dd>{money(p.price)}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+
+            <div className="wf-col">
+              <h3>Хөнгөлөлт</h3>
+              <dl>
+                {PRIVILEGE.map((p) => (
+                  <div key={p.name} className="wf-row">
+                    <dt>
+                      {p.name}
+                      {p.note && <small>{p.note}</small>}
+                    </dt>
+                    <dd>{money(p.price)}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="wf-fine">
+                Хөнгөлөлттэй эрхийг ресепшн дээр үнэмлэх үзүүлж нээлгэнэ.
+              </p>
+            </div>
           </div>
         </section>
 
-        {/* ── Сунгах урилга ── */}
+        {/* ── Байршил ── */}
+        <section id="haana" className="wf-sec">
+          <h2 className="wf-h2">Хаана</h2>
+          <div className="wf-where">
+            <div className="wf-map">
+              <iframe
+                src={osmEmbedUrl()}
+                title={`${GYM.name}-ийн байршил газрын зураг дээр`}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+
+            <div className="wf-where-body">
+              <dl className="wf-facts">
+                {GYM.hours.map((h) => (
+                  <div key={h.days}>
+                    <dt>{h.days}</dt>
+                    <dd>{h.time}</dd>
+                  </div>
+                ))}
+              </dl>
+
+              <div className="wf-links">
+                <a href={`tel:${GYM.phone}`}>{GYM.phoneText}</a>
+                <a href={`mailto:${GYM.email}`}>{GYM.email}</a>
+                <a href={GYM.instagram} target="_blank" rel="noreferrer">
+                  Instagram
+                </a>
+                <a href={GYM.facebook} target="_blank" rel="noreferrer">
+                  Facebook
+                </a>
+              </div>
+
+              <a
+                href={GYM.mapsPlaceUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="wf-btn wf-btn--ghost"
+              >
+                Google Maps дээр нээх
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Сунгах урилга: дугаарыг ЭНДЭЭС авна ── */}
         <section className="wf-act">
           <h2>Эрхээ сунгах уу?</h2>
           <p>
             Утасны дугаараа оруулаад багцаа сонгоно. Төлбөр хийсний дараа
             эрх тэр дороо нээгдэнэ.
           </p>
-          <Link href="/pay" className="wf-btn wf-btn--lg">
-            Эрх сунгах
-          </Link>
+          <PhoneStart />
         </section>
       </main>
 
@@ -137,34 +237,37 @@ export default function Home() {
         <div>
           <h3>Цагийн хуваарь</h3>
           <p>
-            Даваа – Баасан <b>06:00 – 22:00</b>
-            <br />
-            Бямба, Ням <b>08:00 – 21:00</b>
+            {GYM.hours.map((h) => (
+              <span key={h.days}>
+                {h.days} <b>{h.time}</b>
+                <br />
+              </span>
+            ))}
           </p>
         </div>
         <div>
           <h3>Холбоо барих</h3>
           <p>
-            <a href="tel:+97688000500">8800 0500</a>
+            <a href={`tel:${GYM.phone}`}>{GYM.phoneText}</a>
             <br />
-            <a
-              href="https://instagram.com/win.fit.fitness"
-              target="_blank"
-              rel="noreferrer"
-            >
-              win.fit.fitness
+            <a href={`mailto:${GYM.email}`}>{GYM.email}</a>
+            <br />
+            <a href={GYM.instagram} target="_blank" rel="noreferrer">
+              {GYM.instagramHandle}
             </a>
           </p>
         </div>
         <div>
           <h3>Данс</h3>
           <p>
-            Хаан банк
+            {GYM.bank.name}
             <br />
-            <b>5312696597</b>
+            <b>{GYM.bank.account}</b>
           </p>
         </div>
-        <p className="wf-copy">WIN FIT · {new Date().getFullYear()}</p>
+        <p className="wf-copy">
+          {GYM.name} · {new Date().getFullYear()}
+        </p>
       </footer>
     </div>
   );

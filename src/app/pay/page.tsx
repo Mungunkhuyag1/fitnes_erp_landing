@@ -1,7 +1,8 @@
 'use client';
 
 import { Loader2, Search } from 'lucide-react';
-import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import {
   PackagePicker,
   PayHeader,
@@ -29,22 +30,23 @@ interface Lookup {
  * харахын тулд Wallet карт дээрх хувийн линкээр орно
  * (docs/01-integration-model.md §6.6).
  */
-export default function PayByPhonePage() {
+function PayByPhone() {
+  // Нүүр хуудаснаас дугаараа бичээд ирсэн бол `?phone=` дагуулж ирнэ.
+  const preset = useSearchParams().get('phone') ?? '';
   const { data: cfg } = useApi<{ gymName: string; packages: PayPackage[] }>(
     '/public/packages',
   );
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState(preset);
   const [found, setFound] = useState<Lookup | null>(null);
   const [invoice, setInvoice] = useState<PendingInvoice | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function lookup(e: React.FormEvent) {
-    e.preventDefault();
+  const search = useCallback(async (value: string) => {
     setBusy(true);
     setError(null);
     try {
-      const res = await api.post<Lookup>('/public/lookup', { phone });
+      const res = await api.post<Lookup>('/public/lookup', { phone: value });
       setFound(res);
       if (!res.found) {
         setError('Энэ дугаараар бүртгэл олдсонгүй. Ресепшнд хандана уу.');
@@ -54,7 +56,27 @@ export default function PayByPhonePage() {
     } finally {
       setBusy(false);
     }
+  }, []);
+
+  function lookup(e: React.FormEvent) {
+    e.preventDefault();
+    void search(phone);
   }
+
+  /*
+   * Нүүрэн дээр дугаараа бичсэн хүнд дахин «Үргэлжлүүлэх» даруулах нь
+   * утгагүй — шууд хайна.
+   *
+   * ⚠ `ran` хамгаалалт ЗААВАЛ: React-ийн strict горимд effect хоёр удаа
+   * ажилладаг ба түүнгүйгээр хоёр хайлт зэрэг явж, хоёр дахь нь эхнийхийг
+   * дарж бичнэ.
+   */
+  const ran = useRef(false);
+  useEffect(() => {
+    if (ran.current || preset.replace(/\D/g, '').length < 8) return;
+    ran.current = true;
+    void search(preset);
+  }, [preset, search]);
 
   async function pay(packageId: string) {
     setBusy(true);
@@ -155,5 +177,23 @@ export default function PayByPhonePage() {
         Эрхийн дэлгэрэнгүйг Wallet карт дээрх «Эрх сунгах» холбоосоор харна
       </p>
     </main>
+  );
+}
+
+/**
+ * `useSearchParams` нь Suspense шаарддаг — эс бөгөөс бүх хуудас
+ * динамик болно.
+ */
+export default function PayByPhonePage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="flex min-h-svh items-center justify-center">
+          <Loader2 className="text-muted-foreground size-5 animate-spin" />
+        </main>
+      }
+    >
+      <PayByPhone />
+    </Suspense>
   );
 }

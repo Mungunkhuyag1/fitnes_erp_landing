@@ -170,6 +170,15 @@
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--line);
 }
+.wf-nav {
+  display: none; gap: 26px; font-size: 14px; color: var(--mute);
+}
+.wf-nav a { text-decoration: none; }
+.wf-nav a:hover { color: var(--bone); }
+/* Явган хүний өргөнд цэс нуугдана — гурван холбоос багтаахаар шахвал
+   тэмдэг ба гол товч хоёулаа нарийсна. Хуудас богино тул гүйлгэхэд хангалттай. */
+@media (min-width: 780px) { .wf-nav { display: flex; } }
+
 .wf-brand {
   display: flex; align-items: center; gap: 10px;
   font-family: var(--font-display), sans-serif;
@@ -192,14 +201,33 @@
 .wf-btn--ghost:hover { border-color: var(--bone); color: var(--bone); }
 
 /* ── Гарчиг ── */
-.wf-hero {
+.wf-hero { position: relative; }
+.wf-hero-body {
   display: grid; gap: 40px;
   padding: clamp(48px, 9vw, 112px) 24px clamp(40px, 6vw, 72px);
   max-width: 1180px; margin: 0 auto;
 }
 @media (min-width: 900px) {
-  .wf-hero { grid-template-columns: 1.15fr .85fr; align-items: end; gap: 56px; }
+  .wf-hero-body { grid-template-columns: 1.15fr .85fr; align-items: end; gap: 56px; }
 }
+
+/* ── Зурагтай хувилбар ──
+   Зураг ирсэн үед л нэмэгддэг. `--photo` байхгүй бол дээрх типографийн
+   зохиомж хэвээрээ ажиллана — зураг хүлээж хоосон блок үлдээхгүй. */
+.wf-hero--photo { min-height: min(92svh, 860px); display: flex; align-items: flex-end; }
+.wf-hero-img { object-fit: cover; z-index: 0; }
+/* Текст уншигдах давхарга. Доод талд нь хар, дээшлэх тусам сийрэгжинэ —
+   толгойн мөрийг зургийн дээгүүр уншигдахуйц байлгана. */
+.wf-hero--photo::after {
+  content: ''; position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(
+    to top,
+    var(--ink) 4%,
+    color-mix(in oklab, var(--ink) 72%, transparent) 42%,
+    color-mix(in oklab, var(--ink) 34%, transparent) 100%
+  );
+}
+.wf-hero--photo .wf-hero-body { position: relative; z-index: 2; width: 100%; }
 .wf-title {
   font-family: var(--font-display), sans-serif;
   font-size: clamp(3.6rem, 14vw, 10rem); font-weight: 700;
@@ -221,18 +249,83 @@
   font-weight: 600; font-size: 14px;
 }
 
+/* ── Хэсгийн бүрхүүл ── */
+.wf-sec {
+  max-width: 1180px; margin: 0 auto;
+  padding: clamp(56px, 9vw, 104px) 24px;
+}
+.wf-h2 {
+  font-family: var(--font-display), sans-serif; font-weight: 700;
+  font-size: clamp(1.9rem, 5vw, 3rem); text-transform: uppercase;
+  letter-spacing: .03em; margin: 0 0 clamp(24px, 4vw, 40px);
+  padding-bottom: 16px; border-bottom: 2px solid var(--lime);
+}
+
+/* ── Заалны зургууд ── */
+.wf-grid { display: grid; gap: 16px; }
+@media (min-width: 640px) { .wf-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .wf-grid { grid-template-columns: repeat(3, 1fr); } }
+/* Сүүлийн эгнээ дутуу үлдэхээс сэргийлнэ.
+   5 зураг × 3 багана = 3 + 2 болж, баруун доод булан ЦООРХОЙ үлдэнэ.
+   Сүүлчийн зургийг үлдсэн зайг дүүргэтэл сунгавал эгнээ битүү болно. */
+@media (min-width: 1000px) {
+  .wf-shot:last-child:nth-child(3n + 1) { grid-column: span 3; }
+  .wf-shot:last-child:nth-child(3n + 2) { grid-column: span 2; }
+}
+@media (min-width: 640px) and (max-width: 999px) {
+  .wf-shot:last-child:nth-child(2n + 1) { grid-column: span 2; }
+}
+.wf-shot { margin: 0; }
+.wf-shot img {
+  display: block; width: 100%; height: clamp(200px, 26vw, 280px);
+  object-fit: cover; border-radius: 2px;
+}
+.wf-shot figcaption {
+  margin-top: 10px; font-size: 13px; color: var(--mute);
+  letter-spacing: .04em;
+}
+
+/* ── Байршил ── */
+.wf-where { display: grid; gap: 28px; }
+@media (min-width: 900px) { .wf-where { grid-template-columns: 1.25fr 1fr; gap: 40px; } }
+.wf-map {
+  position: relative; border: 1px solid var(--line); border-radius: 2px;
+  overflow: hidden; min-height: 380px; background: var(--ink-2);
+}
+.wf-map iframe {
+  position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  /* OSM зөвхөн ЦАЙВАР хэв маягтай.
+     ⚠ `invert()` хэрэглэж БОЛОХГҮЙ: OSM-д зам нь ЦАЙВАР, суурь нь бараан
+     шаргал. Урвуулахад зам нь сууриасаа ХАРАНГУЙ болж, зураг уншигдахаа
+     больдог (туршиж үзсэн). Саарал болгоод бага зэрэг бүдгэрүүлэхэд
+     хуудасны бараан аястай зохицож, зам нь уншигдсан хэвээр үлдэнэ. */
+  filter: grayscale(1) brightness(.78) contrast(1.08);
+}
+.wf-where-body { display: flex; flex-direction: column; gap: 26px; align-items: flex-start; }
+.wf-facts { margin: 0; width: 100%; }
+.wf-facts > div {
+  display: flex; justify-content: space-between; gap: 16px;
+  padding: 12px 0; border-bottom: 1px solid var(--line);
+}
+.wf-facts dt { margin: 0; color: var(--mute); font-size: 15px; }
+.wf-facts dd {
+  margin: 0; font-variant-numeric: tabular-nums; font-weight: 600;
+  font-family: var(--font-display), sans-serif; font-size: 19px;
+}
+.wf-links { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 15px; }
+.wf-links a { text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 2px; }
+.wf-links a:hover { border-color: var(--lime); color: var(--lime); }
+
 /* ── Үнийн самбар ── */
 .wf-board {
   display: grid; gap: 1px; background: var(--line);
-  max-width: 1180px; margin: clamp(48px, 8vw, 88px) auto;
   border: 1px solid var(--line);
 }
 @media (min-width: 860px) { .wf-board { grid-template-columns: 1fr 1fr; } }
 .wf-col { background: var(--ink); padding: clamp(24px, 4vw, 40px); }
-.wf-col--alt { background: var(--ink-2); }
-.wf-col h2 {
+.wf-col h3 {
   font-family: var(--font-display), sans-serif; font-weight: 700;
-  font-size: clamp(1.5rem, 3.4vw, 2.1rem); text-transform: uppercase;
+  font-size: clamp(1.3rem, 3vw, 1.75rem); text-transform: uppercase;
   letter-spacing: .05em; margin: 0 0 22px; color: var(--lime);
 }
 .wf-col dl { margin: 0; }
@@ -261,6 +354,37 @@
   margin: 0 0 14px; letter-spacing: .01em;
 }
 .wf-act p { color: var(--mute); max-width: 44ch; margin: 0 auto 30px; line-height: 1.6; }
+
+/* ── Дугаар оруулах талбар ──
+   Гурван хэсэг нэг хүрээнд: улсын код, талбар, товч. Утас дээр товч нь
+   доошоо бүтэн өргөнөөр бууна — 44px-ээс нарийн дарах талбай үүсгэхгүй. */
+.wf-start {
+  display: flex; flex-wrap: wrap; gap: 0;
+  max-width: 460px; margin: 0 auto;
+  border: 1px solid var(--line); border-radius: 2px;
+  background: var(--ink-2);
+}
+.wf-start-cc {
+  display: flex; align-items: center; padding: 0 12px 0 16px;
+  color: var(--mute); font-variant-numeric: tabular-nums; font-size: 16px;
+}
+.wf-start input {
+  flex: 1 1 140px; min-width: 0; padding: 15px 8px;
+  background: none; border: 0; color: var(--bone);
+  font: inherit; font-size: 16px; /* 16px-ээс бага бол iOS нэмэх тусгал хийнэ */
+  outline: none;
+}
+.wf-start input::placeholder { color: var(--mute); }
+.wf-start .wf-btn { flex: 0 0 auto; border-radius: 0; margin: -1px; gap: 8px; }
+.wf-start .wf-btn:disabled {
+  background: var(--line); border-color: var(--line);
+  color: var(--mute); cursor: not-allowed;
+}
+.wf-start-arrow { width: 16px; height: 16px; }
+@media (max-width: 520px) {
+  .wf-start { display: grid; grid-template-columns: auto 1fr; }
+  .wf-start .wf-btn { grid-column: 1 / -1; }
+}
 
 /* ── Хөл ── */
 .wf-foot {
