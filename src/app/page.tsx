@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { OpenNow } from '@/components/open-now';
 import { PhoneStart } from '@/components/phone-start';
+import { FacebookMark, InstagramMark } from '@/components/social-icons';
 import { GYM, osmEmbedUrl } from '@/lib/gym';
 import { galleryPhotos, heroPhoto } from '@/lib/photos';
 
@@ -282,15 +283,32 @@ export default function Home() {
           <h3>Холбоо барих</h3>
           <p>
             <a href={`tel:${GYM.phone}`}>{GYM.phoneText}</a>
-            <br />
-            <a href={GYM.instagram} target="_blank" rel="noreferrer">
-              {GYM.instagramHandle}
-            </a>
-            <br />
-            <a href={GYM.facebook} target="_blank" rel="noreferrer">
-              Facebook
-            </a>
           </p>
+        </div>
+        <div>
+          <h3>Сошиал</h3>
+          {/*
+            ⚠ `aria-label` ЗААВАЛ: icon дотор текст байхгүй тул дэлгэц
+            уншигч «холбоос» гэж л хэлээд юу руу орохыг хэлэхгүй.
+          */}
+          <div className="wf-social">
+            <a
+              href={GYM.instagram}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={`Instagram — ${GYM.instagramHandle}`}
+            >
+              <InstagramMark />
+            </a>
+            <a
+              href={GYM.facebook}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Facebook — Win Fit Fitness"
+            >
+              <FacebookMark />
+            </a>
+          </div>
         </div>
         <p className="wf-copy">
           {GYM.name} · {new Date().getFullYear()}

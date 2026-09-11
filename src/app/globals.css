@@ -460,13 +460,13 @@
 }
 /* Хоёр багана. `1fr 1fr` бол 1180px-ийн саванд багана тус бүр 570px
    болж, доторх богино мөрүүд хоорондоо холбоогүй хөвөх болно. */
-/* Хоёр багана + үлдсэн зайг барих хоосон багана.
-   ⚠ Гуравдахь `1fr` нь ЗААВАЛ: түүнгүйгээр доорх зураас (`1 / -1`)
-   зөвхөн 672px хүрч, хуудасны голд тасарч зогсоно. */
+/* Гурван багана + үлдсэн зайг барих хоосон багана.
+   ⚠ Сүүлийн `1fr` нь ЗААВАЛ: түүнгүйгээр доорх зураас (`1 / -1`)
+   хуудасны голд тасарч зогсоно. */
 @media (min-width: 720px) {
   .wf-foot {
-    grid-template-columns: repeat(2, minmax(0, 300px)) 1fr;
-    gap: 28px 72px;
+    grid-template-columns: repeat(3, minmax(0, 240px)) 1fr;
+    gap: 28px 56px;
   }
 }
 .wf-foot h3 {
@@ -477,6 +477,20 @@
 .wf-foot b { color: var(--bone); font-weight: 600; font-variant-numeric: tabular-nums; }
 .wf-foot a { text-decoration: none; }
 .wf-foot a:hover { color: var(--lime); }
+/* ── Сошиалын товчлуур ──
+   44×44 — хуруугаар дарахад хангалттай. Icon нь 20px тул тойрон
+   зай үлдэнэ; товчлуурыг icon-ийн хэмжээгээр жижигрүүлбэл утсан
+   дээр оносонгүй дарагдана. */
+.wf-social { display: flex; gap: 10px; }
+.wf-social a {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; border: 1px solid var(--line);
+  border-radius: 2px; color: var(--mute);
+  transition: color .15s, border-color .15s;
+}
+.wf-social a:hover { color: var(--lime); border-color: var(--lime); }
+.wf-social svg { width: 20px; height: 20px; }
+
 .wf-copy {
   grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 22px;
   font-size: 13px; color: var(--mute);
