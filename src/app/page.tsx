@@ -230,7 +230,6 @@ export default function Home() {
 
               <div className="wf-links">
                 <a href={`tel:${GYM.phone}`}>{GYM.phoneText}</a>
-                <a href={`mailto:${GYM.email}`}>{GYM.email}</a>
                 <a href={GYM.instagram} target="_blank" rel="noreferrer">
                   Instagram
                 </a>
@@ -284,19 +283,13 @@ export default function Home() {
           <p>
             <a href={`tel:${GYM.phone}`}>{GYM.phoneText}</a>
             <br />
-            <a href={`mailto:${GYM.email}`}>{GYM.email}</a>
-            <br />
             <a href={GYM.instagram} target="_blank" rel="noreferrer">
               {GYM.instagramHandle}
             </a>
-          </p>
-        </div>
-        <div>
-          <h3>Данс</h3>
-          <p>
-            {GYM.bank.name}
             <br />
-            <b>{GYM.bank.account}</b>
+            <a href={GYM.facebook} target="_blank" rel="noreferrer">
+              Facebook
+            </a>
           </p>
         </div>
         <p className="wf-copy">

@@ -19,13 +19,10 @@ export const GYM = {
   /** Дуудлагын холбоос ба хүнд харагдах хэлбэр тусдаа. */
   phone: '+97688303969',
   phoneText: '8830 3969',
-  email: 'Winfitness03@gmail.com',
 
   facebook: 'https://www.facebook.com/people/Win-Fit-Fitness',
   instagram: 'https://www.instagram.com/win.fit.fitness',
   instagramHandle: 'win.fit.fitness',
-
-  bank: { name: 'Хаан банк', account: '5312696597' },
 
   hours: [
     { days: 'Даваа – Баасан', time: '06:00 – 22:00' },
