@@ -1,0 +1,285 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  /* ── Графикийн палитр ──
+     shadcn-ийн neutral анхдагч нь chroma=0 (бүгд саарал) тул stacked график
+     дээр цувралуудыг ялгах боломжгүй байсан. Доорх өнгийг ӨНГӨНИЙ ХАРАХ
+     ЯЛГААНЫ шалгалтаар (CVD ΔE, normal-vision ΔE, contrast, lightness band)
+     батлав — light: worst adjacent CVD ΔE 9.1, dark: 8.4 (≥8 шаардлага).
+     Дараалал ТОГТМОЛ: 1 хөх · 2 хүрэн · 3 номин · 4 шар · 5 бэж.
+     ⚠ Дарааллыг солихгүй — цуврал алга болоход бусад нь өнгө сольж болохгүй. */
+  --chart-1: #2a78d6;
+  --chart-2: #eb6834;
+  --chart-3: #1baf7a;
+  --chart-4: #eda100;
+  --chart-5: #e87ba4;
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  /* Хар загварт ижил өнгө, харанхуй дэвсгэрт тааруулж дахин шатласан
+     (автомат хөрвүүлэлт биш — тусад нь батлагдсан). */
+  --chart-1: #3987e5;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
+  --chart-4: #c98500;
+  --chart-5: #d55181;
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+/* ══════════════════════════════════════════════════════════════
+   WIN FIT нүүр хуудас
+   
+   ⚠ Заалны ЖИНХЭНЭ самбараас авсан өнгө. Энэ хэсэг нь `.wf` доор
+   ХААЛТТАЙ — төлбөрийн хуудсууд shadcn-ийн токен дээрээ үлдэнэ.
+   Нүүр нь дэлгүүрийн шил, төлбөр нь касс — хоёр өөр орчин.
+   ══════════════════════════════════════════════════════════════ */
+.wf {
+  --ink: #0e1108;      /* хар, ногоон налалттай — саарал #0b0b0b БИШ */
+  --ink-2: #171b10;
+  --line: #2a3120;
+  --lime: #c9f31d;     /* самбарын ногоон */
+  --bone: #f2f3ec;
+  --mute: #8c9478;
+
+  background: var(--ink);
+  color: var(--bone);
+  min-height: 100vh;
+  font-family: var(--font-body), system-ui, sans-serif;
+  color-scheme: dark;
+}
+
+.wf a:not([class*='wf-btn']) { color: inherit; }
+
+/* ── Толгой ── */
+.wf-bar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 14px 24px;
+  background: color-mix(in oklab, var(--ink) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.wf-brand {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-display), sans-serif;
+  font-size: 18px; letter-spacing: .14em; text-decoration: none;
+}
+
+/* ── Товч ── */
+.wf-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 13px 22px; border: 1px solid var(--lime);
+  background: var(--lime); color: var(--ink);
+  font-weight: 600; font-size: 15px; letter-spacing: .01em;
+  text-decoration: none; border-radius: 2px;
+  transition: background .15s, color .15s;
+}
+.wf-btn:hover { background: transparent; color: var(--lime); }
+.wf-btn--sm { padding: 8px 14px; font-size: 13px; }
+.wf-btn--lg { padding: 16px 34px; font-size: 17px; }
+.wf-btn--ghost { background: transparent; color: var(--bone); border-color: var(--line); }
+.wf-btn--ghost:hover { border-color: var(--bone); color: var(--bone); }
+
+/* ── Гарчиг ── */
+.wf-hero {
+  display: grid; gap: 40px;
+  padding: clamp(48px, 9vw, 112px) 24px clamp(40px, 6vw, 72px);
+  max-width: 1180px; margin: 0 auto;
+}
+@media (min-width: 900px) {
+  .wf-hero { grid-template-columns: 1.15fr .85fr; align-items: end; gap: 56px; }
+}
+.wf-title {
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(3.6rem, 14vw, 10rem); font-weight: 700;
+  line-height: .95; letter-spacing: -.005em;
+  margin: 0; text-transform: uppercase;
+}
+/* Ногоон нь БҮТЭЦЭД: гарчгийн доорх зураас */
+.wf-title::after {
+  content: ''; display: block; margin-top: clamp(20px, 3vw, 34px);
+  width: clamp(80px, 14vw, 180px); height: 6px; background: var(--lime);
+}
+.wf-lede { font-size: 17px; line-height: 1.6; color: var(--mute); margin: 0 0 26px; max-width: 46ch; }
+.wf-cta { display: flex; flex-wrap: wrap; gap: 12px; }
+
+/* ── Багтсан зүйлсийн тууз ── */
+.wf-strip {
+  display: flex; flex-wrap: wrap; gap: 10px 32px; justify-content: center;
+  padding: 16px 24px; background: var(--lime); color: var(--ink);
+  font-weight: 600; font-size: 14px;
+}
+
+/* ── Үнийн самбар ── */
+.wf-board {
+  display: grid; gap: 1px; background: var(--line);
+  max-width: 1180px; margin: clamp(48px, 8vw, 88px) auto;
+  border: 1px solid var(--line);
+}
+@media (min-width: 860px) { .wf-board { grid-template-columns: 1fr 1fr; } }
+.wf-col { background: var(--ink); padding: clamp(24px, 4vw, 40px); }
+.wf-col--alt { background: var(--ink-2); }
+.wf-col h2 {
+  font-family: var(--font-display), sans-serif; font-weight: 700;
+  font-size: clamp(1.5rem, 3.4vw, 2.1rem); text-transform: uppercase;
+  letter-spacing: .05em; margin: 0 0 22px; color: var(--lime);
+}
+.wf-col dl { margin: 0; }
+.wf-row {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 18px; padding: 13px 0; border-bottom: 1px solid var(--line);
+}
+.wf-row:last-child { border-bottom: none; }
+.wf-row dt { margin: 0; font-weight: 500; font-size: 16px; }
+.wf-row dt small { display: block; color: var(--mute); font-size: 12.5px; font-weight: 400; margin-top: 3px; }
+.wf-row dd {
+  margin: 0; font-variant-numeric: tabular-nums; white-space: nowrap;
+  font-family: var(--font-display), sans-serif; font-weight: 500;
+  font-size: 21px; letter-spacing: .01em;
+}
+.wf-fine { color: var(--mute); font-size: 13px; margin: 20px 0 0; }
+
+/* ── Сунгах урилга ── */
+.wf-act {
+  text-align: center; padding: clamp(48px, 8vw, 96px) 24px;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+}
+.wf-act h2 {
+  font-family: var(--font-display), sans-serif; font-weight: 700;
+  text-transform: uppercase; font-size: clamp(2rem, 6vw, 3.6rem);
+  margin: 0 0 14px; letter-spacing: .01em;
+}
+.wf-act p { color: var(--mute); max-width: 44ch; margin: 0 auto 30px; line-height: 1.6; }
+
+/* ── Хөл ── */
+.wf-foot {
+  display: grid; gap: 28px; max-width: 1180px;
+  margin: 0 auto; padding: clamp(40px, 6vw, 64px) 24px 48px;
+}
+@media (min-width: 720px) { .wf-foot { grid-template-columns: repeat(3, 1fr); } }
+.wf-foot h3 {
+  font-size: 12px; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--lime); margin: 0 0 10px;
+}
+.wf-foot p { margin: 0; line-height: 1.8; color: var(--mute); font-size: 15px; }
+.wf-foot b { color: var(--bone); font-weight: 600; font-variant-numeric: tabular-nums; }
+.wf-foot a { text-decoration: none; }
+.wf-foot a:hover { color: var(--lime); }
+.wf-copy {
+  grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 22px;
+  font-size: 13px; color: var(--mute);
+}
+
+.wf :focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .wf * { transition: none !important; } }
