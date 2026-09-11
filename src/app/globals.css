@@ -475,4 +475,21 @@
 .wf :focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
 /* Ногоон дэвсгэр дээр ногоон тойм үл үзэгдэнэ. */
 .wf-act :focus-visible { outline-color: var(--ink); }
+
+/* ── Бүрдмэл талбарын фокус ──
+   `+976`, талбар, товч гурав НЭГ хүрээн дотор сууна. Тоймыг дотоод
+   input дээр зурвал бүрдлийг таслан огтолж, хажуугийн хэсгүүд дээр
+   давхарлана. Тиймээс тоймыг БҮХЭЛД нь өгнө.
+
+   ⚠ `:focus-within` БИШ `:has(...)`: товч дээр очиход focus-within
+   бас асч, товчны өөрийнх нь тоймтой давхардан хоёр цагираг гарна. */
+.wf-start input:focus-visible { outline: none; }
+.wf-start:has(input:focus-visible) {
+  outline: 2px solid var(--lime); outline-offset: 2px;
+}
+/* Товч нь хүрээний ирмэг дээр сууна — гадагш гарсан тойм хүрээг
+   давна. Дотогш эргүүлнэ. */
+.wf-start .wf-btn:focus-visible { outline-offset: -5px; }
+
+.wf-act .wf-start:has(input:focus-visible) { outline-color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .wf * { transition: none !important; } }
