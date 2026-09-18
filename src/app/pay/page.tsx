@@ -98,13 +98,20 @@ function PayByPhone() {
   }
 
   return (
-    <main className="mx-auto flex min-h-svh max-w-md flex-col gap-6 px-4 py-10">
+    /*
+     * ⚠ Өргөн дэлгэцэд ч 448px-ийн багана байсан: 13 багц нэг баганаар
+     * урсаж, дэлгэцийн 70% нь хоосон байв. Одоо алхам бүр өөрийн
+     * өргөнийг авна — дугаар бичих нь нарийхан, багц сонгох нь өргөн.
+     */
+    <main className="mx-auto flex min-h-svh w-full max-w-6xl flex-col gap-6 px-4 py-10">
       <PayHeader gymName={cfg?.gymName ?? 'WinFit'} />
 
       {invoice ? (
-        <PayWaiting invoice={invoice} onPaid={() => undefined} />
+        <div className="mx-auto w-full max-w-md">
+          <PayWaiting invoice={invoice} onPaid={() => undefined} />
+        </div>
       ) : !found?.found ? (
-        <Card>
+        <Card className="mx-auto w-full max-w-md">
           <CardContent className="py-6">
             <form onSubmit={lookup} className="space-y-4">
               <div className="space-y-2">
@@ -145,13 +152,33 @@ function PayByPhone() {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-4">
-          <Card>
-            <CardContent className="py-4 text-center">
-              <p className="text-muted-foreground text-xs">Бүртгэл олдлоо</p>
-              <p className="mt-0.5 text-lg font-semibold">{found.maskedName}</p>
-            </CardContent>
-          </Card>
+        /*
+         * Өргөн дэлгэцэд хэн болох нь ЗҮҮН талд тогтоно, багцууд баруун
+         * талд урсана — гишүүн гүйлгэх явцад «зөв бүртгэл дээр байна уу»
+         * гэдгээ харсаар байна.
+         */
+        <div className="grid gap-4 lg:grid-cols-[300px_1fr] lg:items-start lg:gap-8">
+          <div className="space-y-3 lg:sticky lg:top-10">
+            <Card>
+              <CardContent className="py-4 text-center lg:text-left">
+                <p className="text-muted-foreground text-xs">Бүртгэл олдлоо</p>
+                <p className="mt-0.5 text-lg font-semibold">
+                  {found.maskedName}
+                </p>
+              </CardContent>
+            </Card>
+
+            <button
+              type="button"
+              onClick={() => {
+                setFound(null);
+                setError(null);
+              }}
+              className="text-muted-foreground hover:text-foreground w-full text-center text-sm lg:text-left"
+            >
+              Өөр дугаар оруулах
+            </button>
+          </div>
 
           <PackagePicker
             packages={cfg?.packages ?? []}
@@ -159,17 +186,6 @@ function PayByPhone() {
             busy={busy}
             error={error}
           />
-
-          <button
-            type="button"
-            onClick={() => {
-              setFound(null);
-              setError(null);
-            }}
-            className="text-muted-foreground hover:text-foreground w-full text-center text-sm"
-          >
-            Өөр дугаар оруулах
-          </button>
         </div>
       )}
 

@@ -100,10 +100,16 @@ export default function PayByTokenPage() {
   const pending = invoice ?? data.pendingInvoice;
 
   return (
-    <main className="mx-auto flex min-h-svh max-w-md flex-col gap-6 px-4 py-10">
+    /*
+     * ⚠ Өргөнийг `PackagePicker`-тэй ХАМТ өөрчилнө: тэр нь өргөн дэлгэцэд
+     * багцуудыг хоёр баганаар байрлуулдаг тул 448px багана дотор шахагдаж
+     * уншигдахаа болино.
+     */
+    <main className="mx-auto flex min-h-svh w-full max-w-6xl flex-col gap-6 px-4 py-10">
       <PayHeader gymName={data.gymName} />
 
-      <Card>
+      <div className="grid gap-4 lg:grid-cols-[300px_1fr] lg:items-start lg:gap-8">
+      <Card className="lg:sticky lg:top-10">
         <CardContent className="space-y-3 py-5">
           <div>
             <p className="text-lg font-semibold">{data.name}</p>
@@ -134,9 +140,11 @@ export default function PayByTokenPage() {
       </Card>
 
       {pending ? (
-        <PayWaiting invoice={pending} onPaid={reload} />
+        <div className="mx-auto w-full max-w-md lg:mx-0">
+          <PayWaiting invoice={pending} onPaid={reload} />
+        </div>
       ) : (
-        <>
+        <div className="space-y-4">
           <p className="text-muted-foreground text-sm">
             {active
               ? 'Сунгавал үлдсэн хоног дээр нэмэгдэнэ — эрт төлсөн нь алдагдахгүй.'
@@ -148,8 +156,9 @@ export default function PayByTokenPage() {
             busy={busy}
             error={payError}
           />
-        </>
+        </div>
       )}
+      </div>
 
       <p className="text-muted-foreground mt-auto text-center text-xs">
         Төлбөр хийгдмэгц эрх шууд сунгагдаж, терминал автоматаар шинэчлэгдэнэ

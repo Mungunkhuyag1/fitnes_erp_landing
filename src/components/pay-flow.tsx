@@ -6,6 +6,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { api } from "@/lib/api";
 import { GYM } from "@/lib/gym";
 import { date, money } from "@/lib/format";
@@ -125,6 +131,90 @@ function value(p: PayPackage, base: number | null) {
   return { perMonth, save: save >= 5 ? save : 0 };
 }
 
+/** Нэг багцын мөр — жагсаалт ба цонхонд ижил харагдана. */
+function PackageRow({
+  p,
+  base,
+  selected,
+  onSelect,
+}: {
+  p: PayPackage;
+  base: number | null;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const v = value(p, base);
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={selected}
+      className={cn(
+        "flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left transition-colors",
+        selected ? "border-primary bg-primary/5" : "hover:bg-accent/50",
+      )}
+    >
+      <span className="min-w-0">
+        <span className="flex flex-wrap items-center gap-1.5">
+          <span className="font-medium">{p.name}</span>
+          {p.firstTimeOnly && (
+            <span className="bg-primary/10 text-primary rounded px-1.5 py-0.5 text-[10px] font-medium">
+              анх удаа
+            </span>
+          )}
+          {p.promotions.map((promo) => (
+            <span
+              key={promo.name}
+              className="rounded bg-emerald-500/12 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400"
+            >
+              {promo.name}
+            </span>
+          ))}
+        </span>
+        <span className="text-muted-foreground text-sm">
+          {p.days} хоног
+          {p.baseDays !== null && p.baseDays !== p.days && (
+            <span className="text-emerald-600 dark:text-emerald-400">
+              {" "}
+              (+{p.days - p.baseDays})
+            </span>
+          )}
+          {p.days > 30 && ` · сард ${money(v.perMonth)}`}
+        </span>
+      </span>
+      <span className="shrink-0 text-right">
+        {p.basePrice !== null && p.basePrice > p.price && (
+          <span className="text-muted-foreground block text-xs tabular-nums line-through">
+            {money(p.basePrice)}
+          </span>
+        )}
+        <span className="block text-base font-semibold tabular-nums">
+          {money(p.price)}
+        </span>
+        {v.save > 0 && (
+          <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+            {v.save}% хэмнэнэ
+          </span>
+        )}
+      </span>
+    </button>
+  );
+}
+
+/**
+ * Багц сонгох.
+ *
+ * ★ ХОЁР ЗОХИОМЖ, НЭГ ЖАГСААЛТ
+ *
+ * Өргөн дэлгэц дээр жагсаалт нь ХУУДСАН ДЭЭРЭЭ, хоёр баганаар зэрэгцэнэ
+ * — 13 багц нэг баганаар бол хоёр дэлгэц гүйлгэнэ, баруун тал нь
+ * хоосон үлдэнэ.
+ *
+ * Утсан дээр жагсаалт нь ЦОНХОНД ордог: багц бүр хоёр мөр эзэлдэг тул
+ * хуудсанд шингээвэл «Төлбөр төлөх» товч хэдэн дэлгэцийн доор үлдэж,
+ * сонгосон багцаа алддаг. Цонх нь сонголтыг дуусгаад хаагдана —
+ * дараагийн алхам нь нэг товч болж үлдэнэ.
+ */
 export function PackagePicker({
   packages,
   onPay,
@@ -138,8 +228,10 @@ export function PackagePicker({
 }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [tab, setTab] = useState<"standard" | "discount">("standard");
+  const [open, setOpen] = useState(false);
   const groups = split(packages);
   const rows = groups[tab];
+  const chosen = packages.find((p) => p.id === selected) ?? null;
 
   /** Бүлэг бүрийн 30 хоногийн суурь үнэ — хэмнэлт тооцоход. */
   const baseOf = (p: PayPackage): number | null => {
@@ -149,7 +241,14 @@ export function PackagePicker({
     return same ? same.price : null;
   };
 
-  return (
+  /**
+   * Жагсаалт — хуудсан дээр ч, цонхонд ч ижил.
+   *
+   * ⚠ `wide` нь ЦОНХОНД `false`: `lg:` нь ДЭЛГЭЦийн өргөнөөр ажилладаг
+   * тул цонх 448px байхад ч хоёр багана болж, мөр бүр гурав дөрвөн эгнээ
+   * болж эвдэрнэ.
+   */
+  const list = (onPick: (id: string) => void, wide: boolean) => (
     <div className="space-y-4">
       {groups.discount.length > 0 && (
         <div className="bg-muted/60 grid grid-cols-2 gap-1 rounded-xl p-1">
@@ -162,10 +261,7 @@ export function PackagePicker({
             <button
               key={key}
               type="button"
-              onClick={() => {
-                setTab(key);
-                setSelected(null);
-              }}
+              onClick={() => setTab(key)}
               className={cn(
                 "rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                 tab === key
@@ -186,66 +282,62 @@ export function PackagePicker({
         </p>
       )}
 
-      <div className="space-y-1.5">
-        {rows.map((p) => {
-          const v = value(p, baseOf(p));
-          const on = selected === p.id;
-          return (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => setSelected(p.id)}
-              className={cn(
-                "flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left transition-colors",
-                on ? "border-primary bg-primary/5" : "hover:bg-accent/50",
+      {/* Өргөн дэлгэцэд хоёр багана — жагсаалт хоёр дахин богиносно. */}
+      <div className={cn('grid gap-1.5', wide && 'lg:grid-cols-2')}>
+        {rows.map((p) => (
+          <PackageRow
+            key={p.id}
+            p={p}
+            base={baseOf(p)}
+            selected={selected === p.id}
+            onSelect={() => onPick(p.id)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-4">
+      {/* ── Өргөн дэлгэц: жагсаалт хуудсан дээрээ ── */}
+      <div className="hidden lg:block">{list(setSelected, true)}</div>
+
+      {/* ── Утас: цонхоор сонгоно ── */}
+      <div className="space-y-3 lg:hidden">
+        {chosen ? (
+          <div className="border-primary bg-primary/5 flex items-center justify-between gap-3 rounded-xl border px-4 py-3">
+            <span className="min-w-0">
+              <span className="block font-medium">{chosen.name}</span>
+              <span className="text-muted-foreground text-sm">
+                {chosen.days} хоног
+              </span>
+            </span>
+            <span className="shrink-0 text-right">
+              {chosen.basePrice !== null && chosen.basePrice > chosen.price && (
+                <span className="text-muted-foreground block text-xs tabular-nums line-through">
+                  {money(chosen.basePrice)}
+                </span>
               )}
-            >
-              <span className="min-w-0">
-                <span className="flex flex-wrap items-center gap-1.5">
-                  <span className="font-medium">{p.name}</span>
-                  {p.firstTimeOnly && (
-                    <span className="bg-primary/10 text-primary rounded px-1.5 py-0.5 text-[10px] font-medium">
-                      анх удаа
-                    </span>
-                  )}
-                  {p.promotions.map((promo) => (
-                    <span
-                      key={promo.name}
-                      className="rounded bg-emerald-500/12 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400"
-                    >
-                      {promo.name}
-                    </span>
-                  ))}
-                </span>
-                <span className="text-muted-foreground text-sm">
-                  {p.days} хоног
-                  {p.baseDays !== null && p.baseDays !== p.days && (
-                    <span className="text-emerald-600 dark:text-emerald-400">
-                      {" "}
-                      (+{p.days - p.baseDays})
-                    </span>
-                  )}
-                  {p.days > 30 && ` · сард ${money(v.perMonth)}`}
-                </span>
+              <span className="block text-base font-semibold tabular-nums">
+                {money(chosen.price)}
               </span>
-              <span className="shrink-0 text-right">
-                {p.basePrice !== null && p.basePrice > p.price && (
-                  <span className="text-muted-foreground block text-xs tabular-nums line-through">
-                    {money(p.basePrice)}
-                  </span>
-                )}
-                <span className="block text-base font-semibold tabular-nums">
-                  {money(p.price)}
-                </span>
-                {v.save > 0 && (
-                  <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
-                    {v.save}% хэмнэнэ
-                  </span>
-                )}
-              </span>
-            </button>
-          );
-        })}
+            </span>
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-sm">
+            Сунгах хугацаагаа сонгоно уу.
+          </p>
+        )}
+
+        <Button
+          type="button"
+          variant={chosen ? "outline" : "default"}
+          size="lg"
+          className="h-12 w-full text-base"
+          onClick={() => setOpen(true)}
+        >
+          {chosen ? "Багц солих" : "Багц сонгох"}
+        </Button>
       </div>
 
       {error && (
@@ -271,50 +363,66 @@ export function PackagePicker({
             Эдгээр багцыг <strong>ресепшн дээр</strong> авна — хоёулаа
             бүртгүүлэх шаардлагатай тул онлайнаар зарагддаггүй.
           </p>
-          {groups.reception.map((p) => (
-            <div
-              key={p.id}
-              className="bg-muted/40 flex items-center justify-between gap-3 rounded-xl border border-dashed px-4 py-3"
-            >
-              <span className="min-w-0">
-                <span className="flex flex-wrap items-center gap-1.5">
-                  <span className="font-medium">{p.name}</span>
-                  {/* Урамшууллыг ЭНД ч харуулна: нүүр хуудсан дээрх
-                      үнэтэй зөрвөл аль нь үнэн болох нь мэдэгдэхгүй. */}
-                  {p.promotions.map((promo) => (
-                    <span
-                      key={promo.name}
-                      className="rounded bg-emerald-500/12 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400"
-                    >
-                      {promo.name}
-                    </span>
-                  ))}
-                </span>
-                <span className="text-muted-foreground text-sm">
-                  {p.days} хоног
-                  {p.seats > 1 && ` · ${p.seats} хүн`}
-                </span>
-              </span>
-              <span className="shrink-0 text-right">
-                {p.basePrice !== null && p.basePrice > p.price && (
-                  <span className="text-muted-foreground block text-xs tabular-nums line-through">
-                    {money(p.basePrice)}
+          <div className="grid gap-1.5 lg:grid-cols-2">
+            {groups.reception.map((p) => (
+              <div
+                key={p.id}
+                className="bg-muted/40 flex items-center justify-between gap-3 rounded-xl border border-dashed px-4 py-3"
+              >
+                <span className="min-w-0">
+                  <span className="flex flex-wrap items-center gap-1.5">
+                    <span className="font-medium">{p.name}</span>
+                    {/* Урамшууллыг ЭНД ч харуулна: нүүр хуудсан дээрх
+                        үнэтэй зөрвөл аль нь үнэн болох нь мэдэгдэхгүй. */}
+                    {p.promotions.map((promo) => (
+                      <span
+                        key={promo.name}
+                        className="rounded bg-emerald-500/12 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400"
+                      >
+                        {promo.name}
+                      </span>
+                    ))}
                   </span>
-                )}
-                <span className="block text-base font-semibold tabular-nums">
-                  {money(p.price)}
+                  <span className="text-muted-foreground text-sm">
+                    {p.days} хоног
+                    {p.seats > 1 && ` · ${p.seats} хүн`}
+                  </span>
                 </span>
-                <a
-                  href={`tel:${GYM.phone}`}
-                  className="text-muted-foreground text-[11px] underline underline-offset-2"
-                >
-                  {GYM.phoneText}
-                </a>
-              </span>
-            </div>
-          ))}
+                <span className="shrink-0 text-right">
+                  {p.basePrice !== null && p.basePrice > p.price && (
+                    <span className="text-muted-foreground block text-xs tabular-nums line-through">
+                      {money(p.basePrice)}
+                    </span>
+                  )}
+                  <span className="block text-base font-semibold tabular-nums">
+                    {money(p.price)}
+                  </span>
+                  <a
+                    href={`tel:${GYM.phone}`}
+                    className="text-muted-foreground text-[11px] underline underline-offset-2"
+                  >
+                    {GYM.phoneText}
+                  </a>
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
+
+      {/* Утсан дээрх сонгох цонх. Сонгомогц хаагдана — «Болих» дарах
+          алхам нэмэх нь хоёр дахин дарах шаардлага үүсгэнэ. */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-h-[85svh] overflow-y-auto sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Багц сонгох</DialogTitle>
+          </DialogHeader>
+          {list((id) => {
+            setSelected(id);
+            setOpen(false);
+          }, false)}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
