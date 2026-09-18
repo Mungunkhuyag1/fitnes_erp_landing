@@ -1,9 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { GymReel } from '@/components/gym-reel';
 import { OpenNow } from '@/components/open-now';
 import { PhoneStart } from '@/components/phone-start';
 import { FacebookMark, InstagramMark } from '@/components/social-icons';
 import { GYM, osmEmbedUrl } from '@/lib/gym';
+import { gymClips } from '@/lib/clips';
 import { galleryPhotos, heroPhoto } from '@/lib/photos';
 import { fetchBoard, type BoardRow } from '@/lib/pricing';
 
@@ -27,8 +29,19 @@ const INCLUDED = ['Premium тоног төхөөрөмж', 'Сауна', 'Шүр
 
 const money = (n: number) => `${n.toLocaleString('en-US')}₮`;
 
-/** Үнийн самбарын нэг мөр — хоёр багана ижил бүтэцтэй. */
+/**
+ * Үнийн самбарын нэг мөр — хоёр багана ижил бүтэцтэй.
+ *
+ * Хямдарсан мөр нь /pay хуудастай ИЖИЛ зүйлийг хэлнэ: урамшууллын нэр,
+ * хуучин үнэ, шинэ үнэ, хэдэн хувь хямдарсан. Хоёр газар өөрөөр
+ * харуулбал аль нь үнэн болох нь мэдэгдэхгүй.
+ */
 function PriceRow({ row }: { row: BoardRow }) {
+  const save =
+    row.basePrice !== null && row.basePrice > 0
+      ? Math.round((1 - row.price / row.basePrice) * 100)
+      : 0;
+
   return (
     <div className="wf-row">
       <dt>
@@ -47,6 +60,7 @@ function PriceRow({ row }: { row: BoardRow }) {
       <dd>
         {row.basePrice !== null && <s>{money(row.basePrice)}</s>}
         {money(row.price)}
+        {save > 0 && <b>{save}% хямд</b>}
       </dd>
     </div>
   );
@@ -55,6 +69,7 @@ function PriceRow({ row }: { row: BoardRow }) {
 export default async function Home() {
   const hero = heroPhoto();
   const photos = galleryPhotos();
+  const clips = gymClips();
   // ⚠ Үнэ нь API-гаас — кодод бичвэл дашбоардаас багц засахад нүүр
   // хуудас хуучин үнээ үзүүлсээр байна (docs/05 §8.16).
   const board = await fetchBoard();
@@ -67,7 +82,7 @@ export default async function Home() {
           <span>WIN FIT</span>
         </Link>
         <nav className="wf-nav">
-          {photos.length > 0 && <a href="#zaal">Заал</a>}
+          {(clips.length > 0 || photos.length > 0) && <a href="#zaal">Заал</a>}
           <a href="#une">Үнэ</a>
           <a href="#haana">Байршил</a>
         </nav>
@@ -141,31 +156,63 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ── Багтсан зүйлс: тасралтгүй туузан мөр ── */}
-        <div className="wf-strip" aria-label="Гишүүнчлэлд багтсан">
-          {INCLUDED.map((x) => (
-            <span key={x}>{x}</span>
-          ))}
-        </div>
+        {/*
+          ── Багтсан зүйлс ──
+          Бичлэг байвал доорх «Заал» хэсэгт нүүж, бичлэгийн хажууд том
+          жагсаалт болно. Бичлэггүй үед энэ нимгэн тууз хэвээр — эс
+          бөгөөс «юу багтсан» гэдэг хуудаснаас бүрмөсөн алга болно.
+        */}
+        {clips.length === 0 && (
+          <div className="wf-strip" aria-label="Гишүүнчлэлд багтсан">
+            {INCLUDED.map((x) => (
+              <span key={x}>{x}</span>
+            ))}
+          </div>
+        )}
 
-        {/* ── Заал: зураг ирсэн үед л гарна ── */}
-        {photos.length > 0 && (
+        {/* ── Заал: бичлэг эсвэл зураг ирсэн үед л гарна ── */}
+        {(clips.length > 0 || photos.length > 0) && (
           <section id="zaal" className="wf-sec">
             <h2 className="wf-h2">Заал</h2>
-            <div className="wf-grid">
-              {photos.map((p) => (
-                <figure key={p.src} className="wf-shot">
-                  <Image
-                    src={p.src}
-                    alt={p.caption}
-                    width={1400}
-                    height={933}
-                    sizes="(min-width: 900px) 33vw, 100vw"
-                  />
-                  <figcaption>{p.caption}</figcaption>
-                </figure>
-              ))}
-            </div>
+
+            {/*
+              ⚠ Бичлэг ГАНЦААРАА байвал хажуудаа юмгүй, хэсэг дутуу
+              дууссан мэт харагдана. Тиймээс «юу багтсан» жагсаалттай
+              хосолно — бичлэг яг тэр зүйлсийг харуулж байгаа тул
+              хоёулаа бие биенээ тайлбарлана.
+            */}
+            {clips.length > 0 && (
+              <div className="wf-inc">
+                <GymReel clips={clips} />
+                <div>
+                  <p className="wf-inc-label">Багтсан</p>
+                  <ul className="wf-inc-list">
+                    {INCLUDED.map((x) => (
+                      <li key={x}>{x}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {photos.length > 0 && (
+              <div
+                className={clips.length > 0 ? 'wf-grid wf-grid--after' : 'wf-grid'}
+              >
+                {photos.map((p) => (
+                  <figure key={p.src} className="wf-shot">
+                    <Image
+                      src={p.src}
+                      alt={p.caption}
+                      width={1400}
+                      height={933}
+                      sizes="(min-width: 900px) 33vw, 100vw"
+                    />
+                    <figcaption>{p.caption}</figcaption>
+                  </figure>
+                ))}
+              </div>
+            )}
           </section>
         )}
 
@@ -183,7 +230,7 @@ export default async function Home() {
             </div>
 
             <div className="wf-col">
-              <h3>Хөнгөлөлт</h3>
+              <h3>Хөнгөлөлттэй</h3>
               <dl>
                 {board.privilege.map((row) => (
                   <PriceRow key={row.key} row={row} />

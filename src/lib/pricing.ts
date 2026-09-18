@@ -28,7 +28,14 @@ interface ApiPackage {
   seats: number;
   payable: boolean;
   basePrice: number | null;
-  promotions: { name: string }[];
+  promotions: ApiPromotion[];
+}
+
+interface ApiPromotion {
+  name: string;
+  kind: 'percent' | 'amount' | 'fixed_price' | 'bonus_days';
+  /** Хэдэн төгрөг хөнгөлсөн, эсвэл хэдэн хоног нэмсэн. */
+  valueApplied: number;
 }
 
 export interface BoardRow {
@@ -37,9 +44,14 @@ export interface BoardRow {
   price: number;
   /** Урамшууллын ӨМНӨХ үнэ — зураастай харуулна. Хямдраагүй бол `null`. */
   basePrice: number | null;
-  /** Жижиг тэмдэглэлүүд: «анх удаа», «сард 200,000₮», «ресепшн дээр». */
+  /** Жижиг тэмдэглэлүүд: «анх удаа», «2 хүн», «сард 200,000₮». */
   notes: string[];
-  /** Давхарласан урамшууллын нэрс. */
+  /**
+   * Урамшуулал бүр ЯАЖ нөлөөлснөөр нь: «Намрын 15% · −37,500₮».
+   *
+   * Зөвхөн нэр харуулбал давхарласан үед аль нь хэдийг хямдруулсныг
+   * хэлж чадахгүй.
+   */
   promotions: string[];
 }
 
@@ -80,15 +92,24 @@ const LOCKER: BoardRow = {
   promotions: [],
 };
 
+/** «Намрын 15% · −37,500₮» эсвэл «Зуны бэлэг · +15 хоног». */
+function promoLabel(x: ApiPromotion): string {
+  return x.kind === 'bonus_days'
+    ? `${x.name} · +${x.valueApplied} хоног`
+    : `${x.name} · −${money(x.valueApplied)}`;
+}
+
 function toRow(p: ApiPackage): BoardRow {
   const notes: string[] = [];
   if (p.firstTimeOnly) notes.push('анх удаа');
   if (p.seats > 1) notes.push(`${p.seats} хүн`);
   // Урт багцын давуу талыг ТООГООР харуулна: «3 сар 600,000₮» гэхээс
   // «сард 200,000₮» нь 250,000₮-тэй харьцуулахад ойлгомжтой.
+  //
+  // ⚠ «үнэмлэхээр», «ресепшн дээр» гэсэн тэмдэглэл ЭНД БАЙХГҮЙ: баганын
+  // доорх тайлбар хоёуланг нь нэг л удаа хэлдэг. Мөр бүрд давтвал
+  // самбар дүүрч, үнэ нь харагдахаа больдог.
   if (p.days >= 60) notes.push(perMonth(p.price, p.days));
-  if (!p.payable) notes.push('ресепшн дээр');
-  else if (p.requiresProof) notes.push('үнэмлэхээр');
 
   return {
     key: p.id,
@@ -97,7 +118,7 @@ function toRow(p: ApiPackage): BoardRow {
     // Хямдраагүй үед `basePrice` нь `null` ирдэг ч давхар шалгана.
     basePrice: p.basePrice !== null && p.basePrice > p.price ? p.basePrice : null,
     notes,
-    promotions: p.promotions.map((x) => x.name),
+    promotions: p.promotions.map(promoLabel),
   };
 }
 
@@ -138,13 +159,13 @@ const FALLBACK: Board = {
     { key: 'f6', name: 'Уурхайчны эрх 14 хоног', price: 150_000, basePrice: null, notes: [], promotions: [] },
   ],
   privilege: [
-    { key: 'f7', name: 'Хотхоны оршин суугч 1 сар', price: 200_000, basePrice: null, notes: ['үнэмлэхээр'], promotions: [] },
-    { key: 'f8', name: 'Ахмад настан 1 сар', price: 150_000, basePrice: null, notes: ['үнэмлэхээр'], promotions: [] },
-    { key: 'f9', name: 'Оюутан, сурагч 1 сар', price: 160_000, basePrice: null, notes: ['үнэмлэхээр'], promotions: [] },
-    { key: 'f10', name: 'Оюутан, сурагч 2 сар', price: 300_000, basePrice: null, notes: ['үнэмлэхээр'], promotions: [] },
-    { key: 'f11', name: 'Оюутан, сурагч 3 сар', price: 420_000, basePrice: null, notes: ['үнэмлэхээр'], promotions: [] },
-    { key: 'f12', name: 'Хосын багц 3 сар', price: 1_100_000, basePrice: null, notes: ['2 хүн', 'ресепшн дээр'], promotions: [] },
-    { key: 'f13', name: 'Хосын багц 6 сар', price: 1_800_000, basePrice: null, notes: ['2 хүн', 'ресепшн дээр'], promotions: [] },
+    { key: 'f7', name: 'Хотхоны оршин суугч 1 сар', price: 200_000, basePrice: null, notes: [], promotions: [] },
+    { key: 'f8', name: 'Ахмад настан 1 сар', price: 150_000, basePrice: null, notes: [], promotions: [] },
+    { key: 'f9', name: 'Оюутан, сурагч 1 сар', price: 160_000, basePrice: null, notes: [], promotions: [] },
+    { key: 'f10', name: 'Оюутан, сурагч 2 сар', price: 300_000, basePrice: null, notes: [], promotions: [] },
+    { key: 'f11', name: 'Оюутан, сурагч 3 сар', price: 420_000, basePrice: null, notes: [], promotions: [] },
+    { key: 'f12', name: 'Хосын багц 3 сар', price: 1_100_000, basePrice: null, notes: ['2 хүн'], promotions: [] },
+    { key: 'f13', name: 'Хосын багц 6 сар', price: 1_800_000, basePrice: null, notes: ['2 хүн'], promotions: [] },
     LOCKER,
   ],
   live: false,

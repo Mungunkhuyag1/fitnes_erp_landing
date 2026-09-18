@@ -301,6 +301,83 @@
   padding-bottom: 16px; border-bottom: 2px solid var(--lime);
 }
 
+/* ── Заалны бичлэг ──
+   Нэг БОСОО (9:16) бичлэг бүтнээрээ, гүйлгэж солино. Хажуу хажууд нь
+   тавибал хоёулаа нарийсч, аль нь ч уншигдахаа болино.
+
+   ⚠ Өргөнийг хязгаарлав: бүтэн 1180px дээр 9:16 нь 2000px өндөр болж,
+   гүйлгэлтийн хэдэн дэлгэцийг эзэлнэ. */
+/* Хажуудаа жагсаалттай тул ЗҮҮН талдаа тогтоно (`.wf-inc` доторх
+   дүрэм). Ганцаараа үлдвэл голлоно — хоосон тал үүсгэхгүй. */
+.wf-reel { max-width: 420px; margin-inline: auto; }
+.wf-rail {
+  display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory;
+  /* Гүйлгүүрийг нуух — дэвсгэр дээр саарал зураас гарч ирэх нь эвгүй. */
+  scrollbar-width: none;
+}
+.wf-rail::-webkit-scrollbar { display: none; }
+/* ⚠ ХУЛГАНАТАЙ төхөөрөмж дээр хэвтээ гүйлтийг ХААНА.
+   Босоо дугуйг хэвтээ гүйгч залгидаг тул заагч бичлэг дээр байхад
+   хуудас доошоо гүйхээ больдог — зочин хэсэгт гацна. Хулганаар
+   доорх цэгүүдээр сольж, хуруугаараа шудрахад нь (coarse) хэвээр
+   гүйнэ. `scrollIntoView` нь `hidden` үед ч ажиллана. */
+@media (hover: hover) and (pointer: fine) {
+  .wf-rail { overflow-x: hidden; }
+  .wf-dots button { width: 26px; height: 4px; }
+}
+.wf-clip {
+  margin: 0; flex: 0 0 100%; scroll-snap-align: center;
+}
+.wf-clip video {
+  display: block; width: 100%; aspect-ratio: 9 / 16;
+  /* Өндөр нь хязгаарт хүрвэл дээр доороос нь огтолно — төв дэх
+     хөдөлгөөн хэвээр үлдэнэ. */
+  max-height: min(68vh, 620px); object-fit: cover;
+  background: var(--ink-2); border: 1px solid var(--line);
+  border-radius: 2px;
+}
+
+/* Аль бичлэг дээр байгааг заана. Хоёрхон бичлэгт сум хэрэггүй —
+   гүйлгэх нь ойлгомжтой, цэгүүд нь бас дарагдана. */
+.wf-dots { display: flex; justify-content: center; gap: 6px; margin-top: 12px; }
+.wf-dots button {
+  width: 22px; height: 3px; padding: 0; border: 0; border-radius: 2px;
+  background: var(--line); cursor: pointer; transition: background .15s;
+}
+.wf-dots button.on { background: var(--lime); }
+.wf-dots button:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+
+.wf-reel-cap {
+  margin: 10px 0 0; text-align: center; font-size: 13px;
+  color: var(--mute-2); letter-spacing: .04em;
+}
+
+/* ── Бичлэг + багтсан зүйлс ──
+   Ганц босоо бичлэг хажуудаа юмгүй бол хаана ч хоосон харагдана.
+   Жагсаалттай хослуулахад хоёулаа бие биенээ тайлбарлана. */
+.wf-inc { display: grid; gap: 32px; }
+@media (min-width: 900px) {
+  .wf-inc {
+    grid-template-columns: minmax(0, 360px) 1fr;
+    gap: clamp(40px, 6vw, 72px); align-items: center;
+  }
+  .wf-inc .wf-reel { margin-inline: 0; }
+}
+.wf-inc-label {
+  margin: 0 0 6px; font-size: 12px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--lime);
+}
+.wf-inc-list { margin: 0; padding: 0; list-style: none; }
+.wf-inc-list li {
+  display: flex; align-items: baseline; gap: 14px;
+  padding: 16px 0; border-bottom: 1px solid var(--line);
+  font-family: var(--font-display), sans-serif; font-weight: 500;
+  font-size: clamp(1.15rem, 2.4vw, 1.6rem); letter-spacing: .01em;
+}
+.wf-inc-list li:last-child { border-bottom: none; }
+/* Ногоон нь БҮТЭЦЭД: жагсаалтын тэмдэг */
+.wf-inc-list li::before { content: '/'; color: var(--lime); font-weight: 700; }
+
 /* ── Заалны зургууд ── */
 .wf-grid { display: grid; gap: 16px; }
 @media (min-width: 640px) { .wf-grid { grid-template-columns: repeat(2, 1fr); } }
@@ -315,6 +392,8 @@
 @media (min-width: 640px) and (max-width: 999px) {
   .wf-shot:last-child:nth-child(2n + 1) { grid-column: span 2; }
 }
+/* Бичлэгийн доор зураг үргэлжлэх үед амьсгалах зай. */
+.wf-grid--after { margin-top: clamp(24px, 4vw, 40px); }
 .wf-shot { margin: 0; }
 .wf-shot img {
   display: block; width: 100%; height: clamp(200px, 26vw, 280px);
@@ -388,9 +467,17 @@
    тавибал тэмдэглэлгүй мөрөнд нэртэйгээ наалдана («1 сарНамрын 15%»). */
 .wf-row dt .wf-promos { display: block; margin-top: 3px; }
 .wf-row dt .wf-promos em {
-  font-style: normal; font-size: 12.5px; font-weight: 400;
-  color: var(--lime); border-bottom: 1px solid currentColor;
-  margin-right: 8px;
+  font-style: normal; font-size: 11.5px; font-weight: 500;
+  letter-spacing: .02em; color: var(--lime); margin-right: 6px;
+  padding: 2px 6px; border-radius: 2px;
+  background: color-mix(in oklab, var(--lime) 14%, transparent);
+}
+/* Хэдэн хувь хямдарсан — /pay дээрхтэй ижил мэдээлэл. Үнийн ДООР
+   тавина: тоо нь эхлээд, шалтгаан нь дараа. */
+.wf-row dd b {
+  display: block; margin-top: 2px; font-family: inherit;
+  font-size: 11.5px; font-weight: 500; color: var(--lime);
+  letter-spacing: .02em;
 }
 /* Хуучин үнэ — зураастай, жижиг. Шинэ үнийн ӨМНӨ нь зогсоно. */
 .wf-row dd s {
