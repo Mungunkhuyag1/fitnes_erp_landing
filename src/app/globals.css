@@ -382,6 +382,21 @@
   font-family: var(--font-display), sans-serif; font-weight: 500;
   font-size: 21px; letter-spacing: .01em;
 }
+/* Урамшууллын тэмдэг — үнэ ЯАГААД хямдарсныг заана. Ногоон нь бүтцийн
+   өнгө тул энд ЗУРААСААР л хэрэглэнэ, дэвсгэр болгохгүй.
+   ⚠ Багцууд нь ӨӨРИЙН мөрөнд байх ёстой: `inline-block`-ыг шууд `dt`-д
+   тавибал тэмдэглэлгүй мөрөнд нэртэйгээ наалдана («1 сарНамрын 15%»). */
+.wf-row dt .wf-promos { display: block; margin-top: 3px; }
+.wf-row dt .wf-promos em {
+  font-style: normal; font-size: 12.5px; font-weight: 400;
+  color: var(--lime); border-bottom: 1px solid currentColor;
+  margin-right: 8px;
+}
+/* Хуучин үнэ — зураастай, жижиг. Шинэ үнийн ӨМНӨ нь зогсоно. */
+.wf-row dd s {
+  display: block; color: var(--mute); font-size: 13px;
+  font-weight: 400; text-decoration-thickness: 1px;
+}
 .wf-fine { color: var(--mute); font-size: 13px; margin: 20px 0 0; }
 
 /* ── Сунгах урилга ── */

@@ -5,6 +5,7 @@ import { PhoneStart } from '@/components/phone-start';
 import { FacebookMark, InstagramMark } from '@/components/social-icons';
 import { GYM, osmEmbedUrl } from '@/lib/gym';
 import { galleryPhotos, heroPhoto } from '@/lib/photos';
+import { fetchBoard, type BoardRow } from '@/lib/pricing';
 
 /**
  * WIN FIT-ийн нүүр хуудас.
@@ -22,43 +23,41 @@ import { galleryPhotos, heroPhoto } from '@/lib/photos';
  * дараалал илэрхийлэх ёстой; үнэ, зураг хоёр дараалал биш.
  */
 
-/**
- * `months` нь САРЫН үнэ бодоход л хэрэгтэй.
- *
- * ЯАГААД: «3 сар 600,000₮» гэдэг нь 250,000₮-тэй харьцуулахад хямд
- * гэдгийг хүн толгойдоо бодох ёстой болно. Сарын үнийг нь бичиж
- * өгвөл урт хугацааны багц яагаад ашигтайг ХАРУУЛНА — зарах гол
- * логик нь энэ.
- */
-const MEMBERSHIP = [
-  { name: '1 өдөр', price: 30_000, note: null, months: 0 },
-  { name: '1 сар', price: 188_000, note: 'анх удаа · дараа нь 250,000₮', months: 0 },
-  { name: '1 сар', price: 250_000, note: null, months: 0 },
-  { name: '3 сар', price: 600_000, note: null, months: 3 },
-  { name: '6 сар', price: 1_000_000, note: null, months: 6 },
-  { name: '12 сар', price: 1_800_000, note: null, months: 12 },
-  { name: 'Уурхайчны эрх', price: 150_000, note: '14 хоног', months: 0 },
-];
-
-const PRIVILEGE = [
-  { name: 'Оюутан, сурагч', price: 160_000, note: '1 сар · 2 сар 300,000₮ · 3 сар 420,000₮' },
-  { name: 'Ахмад настан', price: 150_000, note: '1 сар' },
-  { name: 'Хотхоны оршин суугч', price: 200_000, note: '1 сар' },
-  { name: 'Хосын багц', price: 1_100_000, note: '2 хүн · 3 сар · 6 сар 1,800,000₮' },
-  { name: 'Шүүгээ', price: 40_000, note: '1 сар' },
-];
-
 const INCLUDED = ['Premium тоног төхөөрөмж', 'Сауна', 'Шүршүүр', 'Үнэгүй зогсоол'];
 
 const money = (n: number) => `${n.toLocaleString('en-US')}₮`;
 
-/** Сарын үнэ — мянга хүртэл нь дугуйруулна («166,666₮» гэж бичихгүй). */
-const perMonth = (price: number, months: number) =>
-  `сард ${money(Math.round(price / months / 1000) * 1000)}`;
+/** Үнийн самбарын нэг мөр — хоёр багана ижил бүтэцтэй. */
+function PriceRow({ row }: { row: BoardRow }) {
+  return (
+    <div className="wf-row">
+      <dt>
+        {row.name}
+        {row.notes.map((n) => (
+          <small key={n}>{n}</small>
+        ))}
+        {row.promotions.length > 0 && (
+          <span className="wf-promos">
+            {row.promotions.map((n) => (
+              <em key={n}>{n}</em>
+            ))}
+          </span>
+        )}
+      </dt>
+      <dd>
+        {row.basePrice !== null && <s>{money(row.basePrice)}</s>}
+        {money(row.price)}
+      </dd>
+    </div>
+  );
+}
 
-export default function Home() {
+export default async function Home() {
   const hero = heroPhoto();
   const photos = galleryPhotos();
+  // ⚠ Үнэ нь API-гаас — кодод бичвэл дашбоардаас багц засахад нүүр
+  // хуудас хуучин үнээ үзүүлсээр байна (docs/05 §8.16).
+  const board = await fetchBoard();
 
   return (
     <div className="wf">
@@ -177,15 +176,8 @@ export default function Home() {
             <div className="wf-col">
               <h3>Гишүүнчлэл</h3>
               <dl>
-                {MEMBERSHIP.map((p, i) => (
-                  <div key={`${p.name}-${i}`} className="wf-row">
-                    <dt>
-                      {p.name}
-                      {p.note && <small>{p.note}</small>}
-                      {p.months > 0 && <small>{perMonth(p.price, p.months)}</small>}
-                    </dt>
-                    <dd>{money(p.price)}</dd>
-                  </div>
+                {board.membership.map((row) => (
+                  <PriceRow key={row.key} row={row} />
                 ))}
               </dl>
             </div>
@@ -193,18 +185,13 @@ export default function Home() {
             <div className="wf-col">
               <h3>Хөнгөлөлт</h3>
               <dl>
-                {PRIVILEGE.map((p) => (
-                  <div key={p.name} className="wf-row">
-                    <dt>
-                      {p.name}
-                      {p.note && <small>{p.note}</small>}
-                    </dt>
-                    <dd>{money(p.price)}</dd>
-                  </div>
+                {board.privilege.map((row) => (
+                  <PriceRow key={row.key} row={row} />
                 ))}
               </dl>
               <p className="wf-fine">
                 Хөнгөлөлттэй эрхийг ресепшн дээр үнэмлэх үзүүлж нээлгэнэ.
+                Хосын багцыг хоёулаа ресепшн дээр бүртгүүлж авна.
               </p>
             </div>
           </div>

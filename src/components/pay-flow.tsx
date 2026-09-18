@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { api } from "@/lib/api";
+import { GYM } from "@/lib/gym";
 import { date, money } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -22,7 +23,12 @@ export interface PayPackage {
   /** Урамшуулалтай бол анхны утгууд — зурж харуулахад. */
   basePrice: number | null;
   baseDays: number | null;
-  promotion: { name: string } | null;
+  /** Давхарласан бүх урамшуулал — хоосон бол энгийн үнэ. */
+  promotions: { name: string }[];
+  /** Хэдэн хүний эрх вэ. Хосын багц = 2. */
+  seats: number;
+  /** Онлайнаар төлж болох уу. `false` бол ресепшн дээр авна. */
+  payable: boolean;
 }
 
 export interface PendingInvoice {
@@ -82,16 +88,22 @@ export function PayHeader({ gymName }: { gymName: string }) {
  * нэхэмжлэх үүсгэнэ.
  */
 /**
- * Багцыг ХОЁР бүлэгт хуваана.
+ * Багцыг ГУРВАН бүлэгт хуваана.
  *
- * ЯАГААД: 11 багцыг нэг жагсаалтаар харуулбал утас дээр гурван дэлгэц
+ * ЯАГААД: 13 багцыг нэг жагсаалтаар харуулбал утас дээр гурван дэлгэц
  * гүйлгэнэ. Ихэнх хүн энгийн багц авдаг тул хөнгөлөлттэйг нь тусад нь
  * нуувал жагсаалт хагасаас илүү богиносно.
+ *
+ * ⚠ `reception` бүлэг нь СОНГОГДОХГҮЙ: хосын багц хоёр гишүүнийг зэрэг
+ * заахыг шаарддаг бөгөөд энэ хуудсанд тэр дэлгэц байхгүй. Гэхдээ
+ * НУУХГҮЙ — үйлчилгээ байгааг мэдэхгүй хүн асуух ч үгүй.
  */
 function split(packages: PayPackage[]) {
+  const payable = packages.filter((p) => p.payable);
   return {
-    standard: packages.filter((p) => !p.requiresProof),
-    discount: packages.filter((p) => p.requiresProof),
+    standard: payable.filter((p) => !p.requiresProof),
+    discount: payable.filter((p) => p.requiresProof),
+    reception: packages.filter((p) => !p.payable),
   };
 }
 
@@ -196,11 +208,14 @@ export function PackagePicker({
                       анх удаа
                     </span>
                   )}
-                  {p.promotion && (
-                    <span className="rounded bg-emerald-500/12 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400">
-                      {p.promotion.name}
+                  {p.promotions.map((promo) => (
+                    <span
+                      key={promo.name}
+                      className="rounded bg-emerald-500/12 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400"
+                    >
+                      {promo.name}
                     </span>
-                  )}
+                  ))}
                 </span>
                 <span className="text-muted-foreground text-sm">
                   {p.days} хоног
@@ -248,6 +263,58 @@ export function PackagePicker({
         {busy && <Loader2 className="size-4 animate-spin" />}
         Төлбөр төлөх
       </Button>
+
+      {/* ── Онлайнаар зарагддаггүй багцууд ── */}
+      {groups.reception.length > 0 && (
+        <div className="space-y-1.5 border-t pt-4">
+          <p className="text-muted-foreground text-sm">
+            Эдгээр багцыг <strong>ресепшн дээр</strong> авна — хоёулаа
+            бүртгүүлэх шаардлагатай тул онлайнаар зарагддаггүй.
+          </p>
+          {groups.reception.map((p) => (
+            <div
+              key={p.id}
+              className="bg-muted/40 flex items-center justify-between gap-3 rounded-xl border border-dashed px-4 py-3"
+            >
+              <span className="min-w-0">
+                <span className="flex flex-wrap items-center gap-1.5">
+                  <span className="font-medium">{p.name}</span>
+                  {/* Урамшууллыг ЭНД ч харуулна: нүүр хуудсан дээрх
+                      үнэтэй зөрвөл аль нь үнэн болох нь мэдэгдэхгүй. */}
+                  {p.promotions.map((promo) => (
+                    <span
+                      key={promo.name}
+                      className="rounded bg-emerald-500/12 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400"
+                    >
+                      {promo.name}
+                    </span>
+                  ))}
+                </span>
+                <span className="text-muted-foreground text-sm">
+                  {p.days} хоног
+                  {p.seats > 1 && ` · ${p.seats} хүн`}
+                </span>
+              </span>
+              <span className="shrink-0 text-right">
+                {p.basePrice !== null && p.basePrice > p.price && (
+                  <span className="text-muted-foreground block text-xs tabular-nums line-through">
+                    {money(p.basePrice)}
+                  </span>
+                )}
+                <span className="block text-base font-semibold tabular-nums">
+                  {money(p.price)}
+                </span>
+                <a
+                  href={`tel:${GYM.phone}`}
+                  className="text-muted-foreground text-[11px] underline underline-offset-2"
+                >
+                  {GYM.phoneText}
+                </a>
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
