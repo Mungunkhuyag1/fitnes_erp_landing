@@ -437,8 +437,11 @@ export function PackagePicker({
 export function PayWaiting({
   invoice,
   onPaid,
+  firstTime = false,
 }: {
   invoice: PendingInvoice;
+  /** Дөнгөж бүртгүүлсэн бол царайны алхмыг сануулна. */
+  firstTime?: boolean;
   onPaid: () => void;
 }) {
   const [paid, setPaid] = useState(false);
@@ -467,9 +470,22 @@ export function PayWaiting({
           <div>
             <p className="text-lg font-semibold">Төлбөр амжилттай</p>
             <p className="text-muted-foreground mt-1 text-sm">
-              Таны эрх сунгагдлаа. Терминал дээр шууд нэвтэрч болно.
+              {firstTime
+                ? "Таны эрх нээгдлээ."
+                : "Таны эрх сунгагдлаа. Терминал дээр шууд нэвтэрч болно."}
             </p>
           </div>
+          {/*
+            ⚠ Онлайнаар хийж БОЛОХГҮЙ ганц алхам. Царайг терминал дээр
+            нь бүртгүүлдэг тул шинэ гишүүн эхний удаад ресепшнээр
+            заавал орно — үүнийг хэлэхгүй бол хаалганы өмнө гацна.
+          */}
+          {firstTime && (
+            <p className="rounded-lg border border-amber-500/30 bg-amber-500/8 px-3 py-2.5 text-sm text-amber-800 dark:text-amber-300">
+              Анх удаа ирэхдээ <strong>ресепшн дээр хандаж царайгаа</strong>{" "}
+              бүртгүүлнэ үү — түүнээс хойш терминал таныг таних болно.
+            </p>
+          )}
         </CardContent>
       </Card>
     );

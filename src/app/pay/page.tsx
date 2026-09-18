@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useApi } from '@/hooks/use-api';
 import { api } from '@/lib/api';
+import { phone as fmtPhone } from '@/lib/format';
 
 interface Lookup {
   found: boolean;
@@ -37,6 +38,8 @@ function PayByPhone() {
     '/public/packages',
   );
   const [phone, setPhone] = useState(preset);
+  const [name, setName] = useState('');
+  const [justRegistered, setJustRegistered] = useState(false);
   const [found, setFound] = useState<Lookup | null>(null);
   const [invoice, setInvoice] = useState<PendingInvoice | null>(null);
   const [busy, setBusy] = useState(false);
@@ -48,9 +51,11 @@ function PayByPhone() {
     try {
       const res = await api.post<Lookup>('/public/lookup', { phone: value });
       setFound(res);
-      if (!res.found) {
-        setError('Энэ дугаараар бүртгэл олдсонгүй. Ресепшнд хандана уу.');
-      }
+      /*
+       * ⚠ Олдоогүй нь АЛДАА БИШ. Урьд нь «Ресепшнд хандана уу» гэж
+       * мухардуулдаг байсан: шөнө дунд эрх авах гэж орсон хүн маргааш
+       * хүртэл хүлээнэ. Одоо доор нь бүртгэлийн маягт гарна.
+       */
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Алдаа гарлаа');
     } finally {
@@ -77,6 +82,28 @@ function PayByPhone() {
     ran.current = true;
     void search(preset);
   }, [preset, search]);
+
+  /** Онлайнаар өөрөө бүртгүүлэх — нэр, утас хоёроор. */
+  async function register(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await api.post<Lookup & { created?: boolean }>(
+        '/public/register',
+        { name: name.trim(), phone },
+      );
+      setFound(res);
+      setJustRegistered(res.created === true);
+      if (!res.found) {
+        setError('Бүртгэл үүсгэж чадсангүй. Ресепшнд хандана уу.');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Алдаа гарлаа');
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function pay(packageId: string) {
     setBusy(true);
@@ -108,9 +135,77 @@ function PayByPhone() {
 
       {invoice ? (
         <div className="mx-auto w-full max-w-md">
-          <PayWaiting invoice={invoice} onPaid={() => undefined} />
+          <PayWaiting
+            invoice={invoice}
+            onPaid={() => undefined}
+            firstTime={justRegistered}
+          />
         </div>
-      ) : !found?.found ? (
+      ) : found && !found.found ? (
+        /*
+         * ── Бүртгэлгүй хүн ──
+         * Утас нь аль хэдийн бичигдсэн тул зөвхөн нэр асууна. Хүйс,
+         * төрсөн огноо зэргийг ресепшн дээр нөхнө — танихгүй хүнээс
+         * анхны маягтад бүтэн анкет нэхэх нь бүртгэлийг тасалдаг.
+         */
+        <Card className="mx-auto w-full max-w-md">
+          <CardContent className="py-6">
+            <form onSubmit={register} className="space-y-4">
+              <div>
+                <p className="font-medium">Шинээр бүртгүүлэх</p>
+                <p className="text-muted-foreground mt-0.5 text-sm">
+                  {fmtPhone(phone)} дугаар бүртгэлгүй байна. Нэрээ бичээд
+                  үргэлжлүүлнэ үү.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="name">Нэр</Label>
+                <Input
+                  id="name"
+                  autoFocus
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Батаа"
+                  className="h-12 text-base"
+                />
+              </div>
+
+              {error && (
+                <p className="text-destructive bg-destructive/8 rounded-lg px-3 py-2.5 text-sm">
+                  {error}
+                </p>
+              )}
+
+              <Button
+                type="submit"
+                size="lg"
+                className="h-12 w-full text-base"
+                disabled={busy || name.trim().length < 2}
+              >
+                {busy && <Loader2 className="size-4 animate-spin" />}
+                Бүртгүүлээд үргэлжлүүлэх
+              </Button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setFound(null);
+                  setError(null);
+                }}
+                className="text-muted-foreground hover:text-foreground w-full text-center text-sm"
+              >
+                Өөр дугаар оруулах
+              </button>
+
+              <p className="text-muted-foreground text-xs">
+                Бүртгүүлээд эрхээ онлайнаар авна. Анх удаа ирэхдээ ресепшн
+                дээр царайгаа бүртгүүлснээр терминал таныг таних болно.
+              </p>
+            </form>
+          </CardContent>
+        </Card>
+      ) : !found ? (
         <Card className="mx-auto w-full max-w-md">
           <CardContent className="py-6">
             <form onSubmit={lookup} className="space-y-4">
