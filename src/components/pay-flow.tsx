@@ -158,7 +158,7 @@ function PackageRow({
         <span className="flex flex-wrap items-center gap-1.5">
           <span className="font-medium">{p.name}</span>
           {p.firstTimeOnly && (
-            <span className="bg-primary/10 text-primary rounded px-1.5 py-0.5 text-[10px] font-medium">
+            <span className="bg-primary/10 text-primary-ink rounded px-1.5 py-0.5 text-[10px] font-medium">
               анх удаа
             </span>
           )}
