@@ -161,7 +161,9 @@
   --ink: #0e1108;      /* хар, ногоон налалттай — саарал #0b0b0b БИШ */
   --ink-2: #171b10;
   --line: #2a3120;
-  --lime: #c9f31d;     /* самбарын ногоон */
+  /* Брэндийн ногоон — дашборд, /pay-ийн `--primary`-тэй ИЖИЛ.
+     Урьд нь #c9f31d (шаргал-ногоон) байсныг нэгтгэв. */
+  --brand: #50f64f;
   --bone: #f2f3ec;
   /* ⚠ #8c9478 байсныг тодруулав: хар суурин дээр 3.6:1 болж, бүх
      тайлбар текст бүдгэрч хуудас дуусаагүй мэт харагдаж байв. */
@@ -204,13 +206,13 @@
 /* ── Товч ── */
 .wf-btn {
   display: inline-flex; align-items: center; justify-content: center;
-  padding: 13px 22px; border: 1px solid var(--lime);
-  background: var(--lime); color: var(--ink);
+  padding: 13px 22px; border: 1px solid var(--brand);
+  background: var(--brand); color: var(--ink);
   font-weight: 600; font-size: 15px; letter-spacing: .01em;
   text-decoration: none; border-radius: 2px;
   transition: background .15s, color .15s;
 }
-.wf-btn:hover { background: transparent; color: var(--lime); }
+.wf-btn:hover { background: transparent; color: var(--brand); }
 .wf-btn--sm { padding: 8px 14px; font-size: 13px; }
 .wf-btn--lg { padding: 16px 34px; font-size: 17px; }
 .wf-btn--ghost { background: transparent; color: var(--bone); border-color: var(--line); }
@@ -253,7 +255,7 @@
 /* Ногоон нь БҮТЭЦЭД: гарчгийн доорх зураас */
 .wf-title::after {
   content: ''; display: block; margin-top: clamp(20px, 3vw, 34px);
-  width: clamp(80px, 14vw, 180px); height: 6px; background: var(--lime);
+  width: clamp(80px, 14vw, 180px); height: 6px; background: var(--brand);
 }
 .wf-lede { font-size: 17px; line-height: 1.6; color: var(--mute); margin: clamp(24px, 4vw, 34px) 0 0; max-width: 44ch; }
 .wf-cta { display: flex; flex-wrap: wrap; gap: 12px; }
@@ -276,14 +278,14 @@
   width: 8px; height: 8px; border-radius: 50%;
   background: var(--mute-2); flex: 0 0 auto;
 }
-.wf-open--yes .wf-dot { background: var(--lime); }
+.wf-open--yes .wf-dot { background: var(--brand); }
 
 .wf-offer { border-top: 1px solid var(--line); padding-top: 20px; }
 .wf-offer-lead { margin: 0 0 8px; font-size: 14px; color: var(--mute); }
 .wf-offer-price {
   margin: 0; font-family: var(--font-display), sans-serif;
   font-weight: 700; font-size: clamp(2.4rem, 6vw, 3.1rem);
-  line-height: 1; letter-spacing: -.01em; color: var(--lime);
+  line-height: 1; letter-spacing: -.01em; color: var(--brand);
   font-variant-numeric: tabular-nums;
 }
 .wf-offer-note { margin: 10px 0 0; font-size: 13px; color: var(--mute-2); }
@@ -293,12 +295,12 @@
   border-bottom: 1px solid var(--line); padding-bottom: 3px;
   align-self: flex-start;
 }
-.wf-panel-link:hover { color: var(--lime); border-color: var(--lime); }
+.wf-panel-link:hover { color: var(--brand); border-color: var(--brand); }
 
 /* ── Багтсан зүйлсийн тууз ── */
 .wf-strip {
   display: flex; flex-wrap: wrap; gap: 10px 32px; justify-content: center;
-  padding: 16px 24px; background: var(--lime); color: var(--ink);
+  padding: 16px 24px; background: var(--brand); color: var(--ink);
   font-weight: 600; font-size: 14px;
 }
 
@@ -311,7 +313,7 @@
   font-family: var(--font-display), sans-serif; font-weight: 700;
   font-size: clamp(1.9rem, 5vw, 3rem); text-transform: uppercase;
   letter-spacing: .03em; margin: 0 0 clamp(24px, 4vw, 40px);
-  padding-bottom: 16px; border-bottom: 2px solid var(--lime);
+  padding-bottom: 16px; border-bottom: 2px solid var(--brand);
 }
 
 /* ── Заалны бичлэг ──
@@ -357,8 +359,8 @@
   width: 22px; height: 3px; padding: 0; border: 0; border-radius: 2px;
   background: var(--line); cursor: pointer; transition: background .15s;
 }
-.wf-dots button.on { background: var(--lime); }
-.wf-dots button:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+.wf-dots button.on { background: var(--brand); }
+.wf-dots button:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
 
 .wf-reel-cap {
   margin: 10px 0 0; text-align: center; font-size: 13px;
@@ -378,7 +380,7 @@
 }
 .wf-inc-label {
   margin: 0 0 6px; font-size: 12px; letter-spacing: .14em;
-  text-transform: uppercase; color: var(--lime);
+  text-transform: uppercase; color: var(--brand);
 }
 .wf-inc-list { margin: 0; padding: 0; list-style: none; }
 .wf-inc-list li {
@@ -389,7 +391,7 @@
 }
 .wf-inc-list li:last-child { border-bottom: none; }
 /* Ногоон нь БҮТЭЦЭД: жагсаалтын тэмдэг */
-.wf-inc-list li::before { content: '/'; color: var(--lime); font-weight: 700; }
+.wf-inc-list li::before { content: '/'; color: var(--brand); font-weight: 700; }
 
 /* ── Заалны зургууд ── */
 .wf-grid { display: grid; gap: 16px; }
@@ -459,7 +461,7 @@
 .wf-col h3 {
   font-family: var(--font-display), sans-serif; font-weight: 700;
   font-size: clamp(1.3rem, 3vw, 1.75rem); text-transform: uppercase;
-  letter-spacing: .05em; margin: 0 0 22px; color: var(--lime);
+  letter-spacing: .05em; margin: 0 0 22px; color: var(--brand);
 }
 .wf-col dl { margin: 0; }
 .wf-row {
@@ -481,15 +483,15 @@
 .wf-row dt .wf-promos { display: block; margin-top: 3px; }
 .wf-row dt .wf-promos em {
   font-style: normal; font-size: 11.5px; font-weight: 500;
-  letter-spacing: .02em; color: var(--lime); margin-right: 6px;
+  letter-spacing: .02em; color: var(--brand); margin-right: 6px;
   padding: 2px 6px; border-radius: 2px;
-  background: color-mix(in oklab, var(--lime) 14%, transparent);
+  background: color-mix(in oklab, var(--brand) 14%, transparent);
 }
 /* Хэдэн хувь хямдарсан — /pay дээрхтэй ижил мэдээлэл. Үнийн ДООР
    тавина: тоо нь эхлээд, шалтгаан нь дараа. */
 .wf-row dd b {
   display: block; margin-top: 2px; font-family: inherit;
-  font-size: 11.5px; font-weight: 500; color: var(--lime);
+  font-size: 11.5px; font-weight: 500; color: var(--brand);
   letter-spacing: .02em;
 }
 /* Хуучин үнэ — зураастай, жижиг. Шинэ үнийн ӨМНӨ нь зогсоно. */
@@ -505,7 +507,7 @@
    Хоёр дахь ногоон блок нэмбэл нөлөө нь тарж алга болно. */
 .wf-act {
   text-align: center; padding: clamp(56px, 9vw, 104px) 24px;
-  background: var(--lime); color: var(--ink);
+  background: var(--brand); color: var(--ink);
 }
 .wf-act h2 {
   font-family: var(--font-display), sans-serif; font-weight: 700;
@@ -513,7 +515,7 @@
   margin: 0 0 14px; letter-spacing: .01em;
 }
 .wf-act p {
-  color: color-mix(in oklab, var(--ink) 74%, var(--lime));
+  color: color-mix(in oklab, var(--ink) 74%, var(--brand));
   max-width: 44ch; margin: 0 auto 30px; line-height: 1.6;
 }
 
@@ -590,12 +592,12 @@
 }
 .wf-foot h3 {
   font-size: 12px; font-weight: 600; letter-spacing: .1em;
-  text-transform: uppercase; color: var(--lime); margin: 0 0 10px;
+  text-transform: uppercase; color: var(--brand); margin: 0 0 10px;
 }
 .wf-foot p { margin: 0; line-height: 1.8; color: var(--mute); font-size: 15px; }
 .wf-foot b { color: var(--bone); font-weight: 600; font-variant-numeric: tabular-nums; }
 .wf-foot a { text-decoration: none; }
-.wf-foot a:hover { color: var(--lime); }
+.wf-foot a:hover { color: var(--brand); }
 /* ── Сошиалын товчлуур ──
    44×44 — хуруугаар дарахад хангалттай. Icon нь 20px тул тойрон
    зай үлдэнэ; товчлуурыг icon-ийн хэмжээгээр жижигрүүлбэл утсан
@@ -607,7 +609,7 @@
   border-radius: 2px; color: var(--mute);
   transition: color .15s, border-color .15s;
 }
-.wf-social a:hover { color: var(--lime); border-color: var(--lime); }
+.wf-social a:hover { color: var(--brand); border-color: var(--brand); }
 .wf-social svg { width: 18px; height: 18px; }
 
 .wf-copy {
@@ -615,7 +617,7 @@
   font-size: 13px; color: var(--mute);
 }
 
-.wf :focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+.wf :focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
 /* Ногоон дэвсгэр дээр ногоон тойм үл үзэгдэнэ. */
 .wf-act :focus-visible { outline-color: var(--ink); }
 
@@ -628,7 +630,7 @@
    бас асч, товчны өөрийнх нь тоймтой давхардан хоёр цагираг гарна. */
 .wf-start input:focus-visible { outline: none; }
 .wf-start:has(input:focus-visible) {
-  outline: 2px solid var(--lime); outline-offset: 2px;
+  outline: 2px solid var(--brand); outline-offset: 2px;
 }
 /* Товч нь хүрээний ирмэг дээр сууна — гадагш гарсан тойм хүрээг
    давна. Дотогш эргүүлнэ. */

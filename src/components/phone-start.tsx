@@ -15,7 +15,7 @@ import { useState } from 'react';
  * мэднэ. Хариуг нь `/pay` хуудас харуулна. «Олдсонгүй» гэдгийг энд
  * үзүүлэхийн тулд хайлтыг давхардуулах шаардлагагүй.
  */
-export function PhoneStart({ tone = 'lime' }: { tone?: 'lime' | 'dark' }) {
+export function PhoneStart({ tone = 'brand' }: { tone?: 'brand' | 'dark' }) {
   const router = useRouter();
   const [phone, setPhone] = useState('');
   const ok = phone.replace(/\D/g, '').length >= 8;
