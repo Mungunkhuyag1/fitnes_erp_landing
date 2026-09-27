@@ -638,3 +638,67 @@
 
 .wf-act .wf-start:has(input:focus-visible) { outline-color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .wf * { transition: none !important; } }
+
+/* ══════════════════════════════════════════════════════════════
+   Хууль зүйн хуудсууд (/privacy, /data-deletion)
+
+   ⚠ Нүүр хуудасны «самбар» аяс ЭНД ТОХИРОХГҮЙ. Эдгээрийг хүн
+   уншиж ойлгох ёстой, сэтгэл хөдөлгөх ёсгүй. Тиймээс том
+   постерын фонт биш, УНШИГДАХ хэмжээ, өргөн мөр хоорондын зай,
+   66ch-ээс хэтрэхгүй мөрийн урт.
+   ══════════════════════════════════════════════════════════════ */
+.wf-legal { max-width: 78ch; }
+.wf-legal section { margin: 0 0 clamp(28px, 4vw, 40px); }
+
+.wf-legal h2 {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700; text-transform: uppercase;
+  font-size: clamp(1.05rem, 2.4vw, 1.3rem);
+  letter-spacing: .04em;
+  margin: 0 0 12px;
+  color: var(--brand);
+}
+.wf-legal h3 {
+  font-weight: 600; font-size: 1rem;
+  margin: 22px 0 8px; color: var(--bone);
+}
+.wf-legal p { line-height: 1.75; margin: 0 0 14px; max-width: 66ch; }
+.wf-legal ul, .wf-legal ol {
+  margin: 0 0 14px; padding-left: 22px; max-width: 66ch;
+}
+.wf-legal li { line-height: 1.7; margin-bottom: 8px; }
+.wf-legal strong { color: var(--bone); font-weight: 600; }
+.wf-legal a { color: var(--brand); text-underline-offset: 3px; }
+
+.wf-legal-back { font-size: .9rem; margin-bottom: 8px; }
+.wf-legal-meta { color: var(--mute-2); font-size: .88rem; }
+
+/* Терминалын зам, цэсний дараалал — моно фонтоор ялгана. */
+.wf-legal-path {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: .85rem; color: var(--mute);
+  background: var(--ink-2); border: 1px solid var(--line);
+  border-radius: 8px; padding: 10px 14px;
+}
+
+/*
+  ⚠ ЭЗЭН БӨГЛӨХ ЁСТОЙ хэсэг — ил тод тэмдэглэнэ.
+
+  Хуулийн текстийг би таамаглаж бичиж БОЛОХГҮЙ. Бөглөөгүй хэсэг
+  энгийн бичвэртэй адил харагдвал хэн ч анзаарахгүй өнгөрч,
+  хуудас дуусчихсан мэт болно.
+*/
+.wf-legal-todo {
+  border-left: 3px solid var(--brand);
+  background: color-mix(in oklab, var(--brand) 8%, var(--ink-2));
+  padding: 12px 16px; border-radius: 0 8px 8px 0;
+  color: var(--mute); font-size: .9rem;
+}
+
+/* Хөл дэх хууль зүйн холбоосууд — эрхийн мэдэгдлийн доор, бүдэг. */
+.wf-copy-legal {
+  display: flex; flex-wrap: wrap; gap: 6px 18px;
+  margin-top: 8px;
+}
+.wf-copy-legal a { color: var(--mute-2); text-underline-offset: 3px; }
+.wf-copy-legal a:hover { color: var(--brand); }

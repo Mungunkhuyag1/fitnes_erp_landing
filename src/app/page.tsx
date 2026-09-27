@@ -340,8 +340,20 @@ export default async function Home() {
             </a>
           </div>
         </div>
+        {/*
+          ⚠ Хууль зүйн холбоосууд ХӨЛД ЗААВАЛ байх ёстой.
+
+          Meta-гийн App Review шалгагч нууцлалын бодлогыг нүүр
+          хуудаснаас олох ёстой — sitemap-д байх нь хангалтгүй.
+          Хүнд ч мөн адил: «миний мэдээлэл хаана байна» гэж хайх
+          хүн хөлөөс эхэлдэг.
+        */}
         <p className="wf-copy">
           {GYM.name} · {new Date().getFullYear()}
+          <span className="wf-copy-legal">
+            <Link href="/privacy">Нууцлалын бодлого</Link>
+            <Link href="/data-deletion">Мэдээллээ устгуулах</Link>
+          </span>
         </p>
       </footer>
     </div>
