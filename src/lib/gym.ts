@@ -6,8 +6,8 @@
  * үлдсэн гурав нь хуучин дугаарыг үзүүлсээр байна.
  */
 export const GYM = {
-  name: 'WIN FIT',
-  legalName: 'Win Fit Fitness',
+  name: 'WinFit',
+  legalName: 'WinFit',
   city: 'Улаанбаатар',
   /** Хүнд харагдах хаяг. Газрын зураг олохгүй хүнд энэ л хэрэгтэй. */
   address: 'Улаанбаатар, Яармаг, Happy Residence 880-р байр',

@@ -27,7 +27,7 @@ const body = Rubik({
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 
-const TITLE = 'WIN FIT — Train. Focus. Become.';
+const TITLE = 'WinFit — Train. Focus. Become.';
 /**
  * Хайлтын үр дүн ба холбоосын урьдчилан харагдацад ЭНЭ гарна.
  *
@@ -41,12 +41,12 @@ const DESCRIPTION =
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
-  title: { default: TITLE, template: '%s · WIN FIT' },
+  title: { default: TITLE, template: '%s · WinFit' },
   description: DESCRIPTION,
-  applicationName: 'WIN FIT',
+  applicationName: 'WinFit',
   openGraph: {
     type: 'website',
-    siteName: 'WIN FIT',
+    siteName: 'WinFit',
     locale: 'mn_MN',
     title: TITLE,
     description: DESCRIPTION,

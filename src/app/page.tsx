@@ -10,7 +10,7 @@ import { galleryPhotos, heroPhoto } from '@/lib/photos';
 import { fetchBoard, type BoardRow } from '@/lib/pricing';
 
 /**
- * WIN FIT-ийн нүүр хуудас.
+ * WinFit-ийн нүүр хуудас.
  *
  * ★ ДИЗАЙНЫ ЧИГЛЭЛ
  *
@@ -79,7 +79,7 @@ export default async function Home() {
       <header className="wf-bar">
         <Link href="/" className="wf-brand">
           <Image src="/brand/mark.png" alt="" width={28} height={28} priority />
-          <span>WIN FIT</span>
+          <span>WinFit</span>
         </Link>
         <nav className="wf-nav">
           {(clips.length > 0 || photos.length > 0) && <a href="#zaal">Заал</a>}
@@ -102,7 +102,7 @@ export default async function Home() {
           {hero && (
             <Image
               src={hero}
-              alt="WIN FIT-ийн заал"
+              alt="WinFit-ийн заал"
               fill
               priority
               sizes="100vw"
@@ -334,7 +334,7 @@ export default async function Home() {
               href={GYM.facebook}
               target="_blank"
               rel="noreferrer"
-              aria-label="Facebook — Win Fit Fitness"
+              aria-label="Facebook — WinFit"
             >
               <FacebookMark />
             </a>
