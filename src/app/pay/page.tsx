@@ -21,6 +21,8 @@ import { phone as fmtPhone } from '@/lib/format';
 interface Lookup {
   found: boolean;
   maskedName?: string;
+  /** `false` бол өмнө нь эрх авсан — «анх удаа» багцыг харуулахгүй. */
+  firstTime?: boolean;
 }
 
 /**
@@ -276,7 +278,9 @@ function PayByPhone() {
           </div>
 
           <PackagePicker
-            packages={cfg?.packages ?? []}
+            packages={(cfg?.packages ?? []).filter(
+              (p) => !p.firstTimeOnly || found.firstTime !== false,
+            )}
             onPay={pay}
             busy={busy}
             error={error}
