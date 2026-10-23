@@ -353,6 +353,7 @@ export default async function Home() {
           <span className="wf-copy-legal">
             <Link href="/privacy">Нууцлалын бодлого</Link>
             <Link href="/data-deletion">Мэдээллээ устгуулах</Link>
+            <Link href="/terms">Үйлчилгээний нөхцөл</Link>
           </span>
         </p>
       </footer>
