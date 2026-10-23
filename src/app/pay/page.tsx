@@ -41,6 +41,7 @@ function PayByPhone() {
   );
   const [phone, setPhone] = useState(preset);
   const [name, setName] = useState('');
+  const [details, setDetails] = useState<Details>(EMPTY_DETAILS);
   const [justRegistered, setJustRegistered] = useState(false);
   const [found, setFound] = useState<Lookup | null>(null);
   const [invoice, setInvoice] = useState<PendingInvoice | null>(null);
@@ -93,7 +94,15 @@ function PayByPhone() {
     try {
       const res = await api.post<Lookup & { created?: boolean }>(
         '/public/register',
-        { name: name.trim(), phone },
+        {
+          name: name.trim(),
+          phone,
+          gender: details.gender,
+          birthDate: details.birthDate,
+          email: details.email.trim(),
+          emergencyName: details.emergencyName.trim(),
+          emergencyPhone: details.emergencyPhone.trim(),
+        },
       );
       setFound(res);
       setJustRegistered(res.created === true);
@@ -146,9 +155,9 @@ function PayByPhone() {
       ) : found && !found.found ? (
         /*
          * ── Бүртгэлгүй хүн ──
-         * Утас нь аль хэдийн бичигдсэн тул зөвхөн нэр асууна. Хүйс,
-         * төрсөн огноо зэргийг ресепшн дээр нөхнө — танихгүй хүнээс
-         * анхны маягтад бүтэн анкет нэхэх нь бүртгэлийг тасалдаг.
+         * Утас нь аль хэдийн бичигдсэн. Нэр, хүйс, төрсөн огноо ЗААВАЛ;
+         * и-мэйл, яаралтай холбоо барих хүн сонголтот — урт маягт
+         * бүртгэлийг тасалдаг тул заавал биш талбарыг ялгаж харуулна.
          */
         <Card className="mx-auto w-full max-w-md">
           <CardContent className="py-6">
@@ -156,8 +165,8 @@ function PayByPhone() {
               <div>
                 <p className="font-medium">Шинээр бүртгүүлэх</p>
                 <p className="text-muted-foreground mt-0.5 text-sm">
-                  {fmtPhone(phone)} дугаар бүртгэлгүй байна. Нэрээ бичээд
-                  үргэлжлүүлнэ үү.
+                  {fmtPhone(phone)} дугаар бүртгэлгүй байна. Мэдээллээ
+                  бөглөөд үргэлжлүүлнэ үү.
                 </p>
               </div>
 
@@ -173,6 +182,8 @@ function PayByPhone() {
                 />
               </div>
 
+              <DetailsFields value={details} onChange={setDetails} />
+
               {error && (
                 <p className="text-destructive bg-destructive/8 rounded-lg px-3 py-2.5 text-sm">
                   {error}
@@ -183,7 +194,12 @@ function PayByPhone() {
                 type="submit"
                 size="lg"
                 className="h-12 w-full text-base"
-                disabled={busy || name.trim().length < 2}
+                disabled={
+                  busy ||
+                  name.trim().length < 2 ||
+                  !details.gender ||
+                  !details.birthDate
+                }
               >
                 {busy && <Loader2 className="size-4 animate-spin" />}
                 Бүртгүүлээд үргэлжлүүлэх
@@ -310,5 +326,122 @@ export default function PayByPhonePage() {
     >
       <PayByPhone />
     </Suspense>
+  );
+}
+
+type Gender = 'male' | 'female' | 'other';
+
+interface Details {
+  gender: Gender | '';
+  birthDate: string;
+  email: string;
+  emergencyName: string;
+  emergencyPhone: string;
+}
+
+const EMPTY_DETAILS: Details = {
+  gender: '',
+  birthDate: '',
+  email: '',
+  emergencyName: '',
+  emergencyPhone: '',
+};
+
+const GENDERS: { value: Gender; label: string }[] = [
+  { value: 'male', label: 'Эрэгтэй' },
+  { value: 'female', label: 'Эмэгтэй' },
+  { value: 'other', label: 'Бусад' },
+];
+
+/**
+ * Бүртгэлийн нэмэлт талбарууд.
+ *
+ * ⚠ Хүйсийг `<select>` БИШ товчоор — утсан дээр нэг даралтаар сонгогдоно.
+ * ⚠ Төрсөн огноо ирээдүйд байж болохгүй (`max`) — backend зөвхөн
+ *   хэлбэрийг шалгадаг.
+ */
+function DetailsFields({
+  value,
+  onChange,
+}: {
+  value: Details;
+  onChange: (v: Details) => void;
+}) {
+  const set = <K extends keyof Details>(k: K, v: Details[K]) =>
+    onChange({ ...value, [k]: v });
+  const today = new Date().toISOString().slice(0, 10);
+
+  return (
+    <>
+      <div className="space-y-2">
+        <Label>Хүйс</Label>
+        <div className="grid grid-cols-3 gap-2">
+          {GENDERS.map((g) => (
+            <Button
+              key={g.value}
+              type="button"
+              variant={value.gender === g.value ? 'default' : 'outline'}
+              className="h-12 text-base"
+              onClick={() => set('gender', g.value)}
+              aria-pressed={value.gender === g.value}
+            >
+              {g.label}
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="birthDate">Төрсөн огноо</Label>
+        <Input
+          id="birthDate"
+          type="date"
+          max={today}
+          value={value.birthDate}
+          onChange={(e) => set('birthDate', e.target.value)}
+          className="h-12 text-base"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="email">
+          И-мэйл <span className="text-muted-foreground font-normal">(заавал биш)</span>
+        </Label>
+        <Input
+          id="email"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          value={value.email}
+          onChange={(e) => set('email', e.target.value)}
+          placeholder="bataa@example.mn"
+          className="h-12 text-base"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="emergencyName">
+          Яаралтай үед холбоо барих хүн{' '}
+          <span className="text-muted-foreground font-normal">(заавал биш)</span>
+        </Label>
+        <div className="grid grid-cols-2 gap-2">
+          <Input
+            id="emergencyName"
+            value={value.emergencyName}
+            onChange={(e) => set('emergencyName', e.target.value)}
+            placeholder="Нэр"
+            className="h-12 text-base"
+          />
+          <Input
+            inputMode="tel"
+            aria-label="Яаралтай үед холбоо барих утас"
+            value={value.emergencyPhone}
+            onChange={(e) => set('emergencyPhone', e.target.value)}
+            placeholder="Утас"
+            className="h-12 text-base"
+          />
+        </div>
+      </div>
+    </>
   );
 }

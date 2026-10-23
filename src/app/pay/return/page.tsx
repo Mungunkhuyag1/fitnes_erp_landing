@@ -31,7 +31,23 @@ interface InvoiceStatus {
   /** Эрх нээхийн өмнө ресепшн дээр баримт шалгуулах ёстой эсэх. */
   needsApproval: boolean;
   approvedAt: string | null;
+  /** `false` бол терминал таныг танихгүй — ресепшнд хандахыг сануулна. */
+  faceEnrolled: boolean;
 }
+
+/*
+ * ⚠ Онлайнаар хийж БОЛОХГҮЙ ганц алхам. Царайг терминал дээр нь
+ * бүртгэдэг тул хэлэхгүй бол шинэ гишүүн хаалганы өмнө гацна.
+ * Bonum-оос буцаж ирэх нь ЭНЭ хуудас тул `PayWaiting`-ийн сануулга
+ * энд хүрдэггүй.
+ */
+const FACE_NOTE = (
+  <>
+    Фитнест анх ирэхдээ <strong>ресепшний ажилтанд хандаж царайгаа
+    терминал дээр уншуулаарай</strong>. Түүнээс хойш терминал таныг таньж
+    хаалга нээгдэнэ.
+  </>
+);
 
 /** Хэдэн секунд тутам шалгах. */
 const POLL_MS = 5_000;
@@ -136,6 +152,13 @@ function ReturnInner() {
             <br />
             Эрхийн хугацаа нь <strong>нээгдсэн өдрөөс</strong> эхэлнэ — хүлээсэн
             хоног тань алдагдахгүй.
+            {!inv.faceEnrolled && (
+              <>
+                <br />
+                <br />
+                {FACE_NOTE}
+              </>
+            )}
           </>
         }
         rows={[
@@ -153,8 +176,13 @@ function ReturnInner() {
         tone="ok"
         icon={<CheckCircle2 className="size-10 text-emerald-500" />}
         title="Төлбөр амжилттай"
-        text="Терминал дээр шууд нэвтэрч болно."
+        text={
+          inv.faceEnrolled
+            ? "Терминал дээр шууд нэвтэрч болно."
+            : "Таны эрх нээгдлээ."
+        }
         amount={inv.amount}
+        note={inv.faceEnrolled ? undefined : FACE_NOTE}
         rows={[
           { label: "Гишүүн", value: inv.memberName ?? "—" },
           { label: "Багц", value: `${inv.packageName} · ${inv.days} хоног` },
