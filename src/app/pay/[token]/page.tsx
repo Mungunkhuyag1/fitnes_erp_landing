@@ -24,6 +24,7 @@ interface MemberView {
   status: string;
   accessEndsAt: string | null;
   daysLeft: number | null;
+  entries?: { left: number; total: number } | null;
   packages: PayPackage[];
   pendingInvoice: PendingInvoice | null;
 }
@@ -131,7 +132,8 @@ export default function PayByTokenPage() {
             >
               {data.accessEndsAt
                 ? active
-                  ? `${date(data.accessEndsAt)} хүртэл · ${data.daysLeft} хоног үлдсэн`
+                  ? `${date(data.accessEndsAt)} хүртэл · ${data.daysLeft} хоног үлдсэн` +
+                    (data.entries ? ` · ${data.entries.left}/${data.entries.total} оролт` : '')
                   : `${date(data.accessEndsAt)}-нд дууссан`
                 : 'Эрх идэвхжээгүй'}
             </p>

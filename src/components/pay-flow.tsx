@@ -21,6 +21,8 @@ export interface PayPackage {
   id: string;
   name: string;
   days: number;
+  /** `null` = хоногийн багц. */
+  entries?: number | null;
   price: number;
   audience: string;
   audienceLabel: string;
@@ -172,6 +174,7 @@ function PackageRow({
           ))}
         </span>
         <span className="text-muted-foreground text-sm">
+          {p.entries ? `${p.entries} оролт · ` : ""}
           {p.days} хоног
           {p.baseDays !== null && p.baseDays !== p.days && (
             <span className="text-emerald-600 dark:text-emerald-400">
@@ -179,7 +182,7 @@ function PackageRow({
               (+{p.days - p.baseDays})
             </span>
           )}
-          {p.days > 30 && ` · сард ${money(v.perMonth)}`}
+          {p.days > 30 && !p.entries && ` · сард ${money(v.perMonth)}`}
         </span>
       </span>
       <span className="shrink-0 text-right">
@@ -309,6 +312,7 @@ export function PackagePicker({
             <span className="min-w-0">
               <span className="block font-medium">{chosen.name}</span>
               <span className="text-muted-foreground text-sm">
+                {chosen.entries ? `${chosen.entries} оролт · ` : ""}
                 {chosen.days} хоног
               </span>
             </span>
@@ -384,6 +388,7 @@ export function PackagePicker({
                     ))}
                   </span>
                   <span className="text-muted-foreground text-sm">
+                    {p.entries ? `${p.entries} оролт · ` : ""}
                     {p.days} хоног
                     {p.seats > 1 && ` · ${p.seats} хүн`}
                   </span>
