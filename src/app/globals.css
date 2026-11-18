@@ -293,6 +293,7 @@
   line-height: 1; letter-spacing: -.01em; color: var(--brand);
   font-variant-numeric: tabular-nums;
 }
+.wf-offer-price--text { font-size: clamp(1.9rem, 4.6vw, 2.4rem); }
 .wf-offer-note { margin: 10px 0 0; font-size: 13px; color: var(--mute-2); }
 
 .wf-panel-link {
